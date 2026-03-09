@@ -1,0 +1,443 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Infocard - covers left half of viewport, full height top to bottom */
+#infocard {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50vw;
+  height: 100vh;
+  transform: translateX(-100%);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  background: rgba(10, 12, 20, 0.95);
+  backdrop-filter: blur(16px);
+  border: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0;
+  color: #e8eaed;
+  font-family: system-ui, -apple-system, sans-serif;
+  box-shadow: 4px 0 48px rgba(0, 0, 0, 0.4);
+  opacity: 1;
+  pointer-events: none;
+  transition: transform 0.25s ease;
+  z-index: 100;
+  overflow: hidden;
+}
+
+#infocard.infocard-visible {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+#infocard #infocard-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+  z-index: 2;
+}
+
+#infocard #infocard-close:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+#infocard .infocard-header {
+  flex-shrink: 0;
+  padding: 1.25rem 1.5rem 1rem;
+  padding-right: 3rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+#infocard-title {
+  margin: 0 0 0.2rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+#infocard .infocard-type {
+  margin: 0 0 0.5rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+#infocard .infocard-desc {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: rgba(232, 234, 237, 0.85);
+}
+
+#infocard .infocard-scroll-wrap {
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1 1 0;
+  min-height: 0;
+  min-width: 0;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem 1.5rem;
+}
+
+#infocard .infocard-section {
+  padding: 0 0 1rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  min-width: 0;
+}
+
+#infocard .infocard-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+#infocard .infocard-section-title {
+  margin: 0 0 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+#infocard .infocard-atmosphere-text {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: rgba(232, 234, 237, 0.88);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+#infocard .infocard-dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 1.2rem;
+  font-size: 0.85rem;
+}
+
+#infocard .infocard-dl dt {
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+}
+
+#infocard .infocard-dl dd {
+  margin: 0;
+  color: rgba(232, 234, 237, 0.95);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+#infocard .infocard-layers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+#infocard .infocard-layer {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+#infocard .infocard-layer:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+#infocard .infocard-layer-name {
+  margin: 0 0 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+#infocard .infocard-layer-composition {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: rgba(232, 234, 237, 0.8);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Visual Container - floats inline with text */
+.infocard-visual-container {
+  float: right;
+  width: 200px;
+  height: 200px;
+  margin: 0;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+#infocard-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.infocard-view-toggle {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.25rem;
+  background: rgba(10, 12, 20, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 0.25rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 10;
+}
+
+.toggle-btn {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.6);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.toggle-btn.active {
+  color: #fff;
+  background: rgba(136, 204, 255, 0.2);
+  border-color: rgba(136, 204, 255, 0.4);
+}
+
+/* Time controls - speed of solar system */
+.timecontrols-panel {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(10, 12, 20, 0.92);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  z-index: 50;
+}
+
+.timecontrols-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-right: 0.25rem;
+}
+
+.timecontrols-buttons {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.timecontrols-btn {
+  padding: 0.4rem 0.65rem;
+  min-width: 2.25rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.timecontrols-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.timecontrols-btn.active {
+  color: #fff;
+  background: rgba(136, 204, 255, 0.25);
+  border-color: rgba(136, 204, 255, 0.5);
+}
+
+/* Planet Labels */
+.planet-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  /* Name on top (2), Dot on bottom (1) */
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: opacity 0.3s ease, transform 0.1s ease;
+  transform-origin: center center;
+}
+
+.planet-label:hover {
+  background: transparent;
+  transform: scale(1.1);
+}
+
+.planet-label:hover .planet-label-dot {
+  background: rgba(136, 204, 255, 1);
+  box-shadow: 0 0 12px rgba(136, 204, 255, 0.8);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.planet-label-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(10, 12, 20, 0.6);
+  border: 2px solid rgba(136, 204, 255, 0.8);
+  box-shadow: 0 0 8px rgba(136, 204, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.planet-label-name {
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  backdrop-filter: blur(2px);
+}
+
+/* Scrollable body so half-screen height is respected */
+
+/* Start Menu Overlay */
+#start-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  /* background: rgba(0, 0, 0, 0.95); -- too dark */
+  background: radial-gradient(circle at center, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.8) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  color: white;
+  font-family: system-ui, -apple-system, sans-serif;
+  transition: opacity 1.5s ease-in-out;
+}
+
+#start-menu h1 {
+  font-size: 4rem;
+  margin: 0 0 1rem;
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+  background: linear-gradient(45deg, #ffcc00, #ff6600);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 20px rgba(255, 165, 0, 0.5));
+}
+
+#start-menu p {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 3rem;
+  font-weight: 300;
+}
+
+#play-button {
+  padding: 1rem 3rem;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+#play-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #fff;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+#start-menu.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#start-menu.hidden * {
+  pointer-events: none;
+}
+
+/* Game UI States */
+.game-ui-hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.5s ease, transform 0.25s ease;
+}
+
+.game-ui-visible {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transition: opacity 1.5s ease 1s, transform 0.25s ease;
+  /* Delay fade in */
+}
+
+/* CRITICAL: The labels container covers the whole screen, so it MUST NOT block events. 
+   Only the labels themselves (children) should accept events. */
+#planet-labels-container.game-ui-visible {
+  pointer-events: none !important;
+}
+
+/* Ensure individual planet labels interact correctly once container is visible */
+.planet-label {
+  pointer-events: auto;
+}
