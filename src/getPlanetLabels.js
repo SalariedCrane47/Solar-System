@@ -67,6 +67,14 @@ export function createPlanetLabels(planets, camera, getFocusObject, onLabelClick
     // Temporary vector for calculations
     const tempV = new THREE.Vector3();
 
+    // Cache viewport size — updated on resize to avoid reading window.innerWidth/Height per label per frame
+    let vpWidth = window.innerWidth;
+    let vpHeight = window.innerHeight;
+    window.addEventListener('resize', () => {
+        vpWidth = window.innerWidth;
+        vpHeight = window.innerHeight;
+    });
+
     /**
      * Update label positions - call this in the animation loop
      */
@@ -95,15 +103,15 @@ export function createPlanetLabels(planets, camera, getFocusObject, onLabelClick
             const isInFront = tempV.z < 1;
 
             // Check if planet is within screen bounds
-            const x = (tempV.x * 0.5 + 0.5) * window.innerWidth;
-            const y = (-(tempV.y * 0.5) + 0.5) * window.innerHeight;
+            const x = (tempV.x * 0.5 + 0.5) * vpWidth;
+            const y = (-(tempV.y * 0.5) + 0.5) * vpHeight;
 
             const margin = 50;
             const isOnScreen =
                 x > -margin &&
-                x < window.innerWidth + margin &&
+                x < vpWidth + margin &&
                 y > -margin &&
-                y < window.innerHeight + margin;
+                y < vpHeight + margin;
 
             // Update position and visibility
             if (isInFront && isOnScreen) {
@@ -111,18 +119,6 @@ export function createPlanetLabels(planets, camera, getFocusObject, onLabelClick
                 element.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
                 element.style.opacity = '1';
             } else {
-                element.style.opacity = '0';
-            }
-        });
-    }
-
-    /**
-     * Show/hide all labels based on focus state
-     */
-    function updateVisibility() {
-        const focusObject = getFocusObject();
-        labels.forEach(({ element, planet }, name) => {
-            if (focusObject && focusObject.userData?.name === name) {
                 element.style.opacity = '0';
             }
         });
@@ -140,7 +136,6 @@ export function createPlanetLabels(planets, camera, getFocusObject, onLabelClick
         container,
         labels,
         updateLabels,
-        updateVisibility,
         dispose
     };
 }

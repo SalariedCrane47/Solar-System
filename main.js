@@ -15,6 +15,8 @@ import { createPlanetLabels } from '/src/getPlanetLabels.js';
 import { orbitalParameters } from './src/data/orbitParam';
 import * as infocard from './events/infocard.js';
 import * as timecontrols from './events/timecontrols.js';
+import * as settingsUI from './events/settingsUI.js';
+import * as searchUI from './events/searchUI.js';
 
 
 /* Scene / Camera / Renderer*/
@@ -23,6 +25,7 @@ import * as timecontrols from './events/timecontrols.js';
 const scene = new THREE.Scene();
 let timeScale = 1.0;
 timecontrols.init((scale) => { timeScale = scale; });
+settingsUI.init();
 
 CameraControls.install({ THREE });
 
@@ -89,13 +92,15 @@ controls.update(0);
 // UI References
 const startMenu = document.getElementById('start-menu');
 const playButton = document.getElementById('play-button');
-const infocardEl = document.getElementById('infocard');
 
 // Helper: Toggle Game UI
 function setGameUIVisible(visible) {
   const labelsContainer = document.getElementById('planet-labels-container');
   const timeControls = document.querySelector('.timecontrols-panel');
-  const uiElements = [labelsContainer, timeControls, infocardEl];
+  const settingsBtn = document.getElementById('settings-btn');
+  const searchContainer = document.getElementById('search-container');
+  const infocardEl = document.getElementById('infocard'); // Lazy lookup — element is created on first show()
+  const uiElements = [labelsContainer, timeControls, infocardEl, settingsBtn, searchContainer];
 
   uiElements.forEach(el => {
     if (!el) return;
@@ -228,9 +233,16 @@ const mouse = new THREE.Vector2();
 
 const clickableObjects = [...planets, ...moons, sun];
 
+searchUI.init(clickableObjects, focusOnPlanet);
+
 let focusObject = null;
 let isTransitioning = false;
 const targetPos = new THREE.Vector3();
+
+// Pre-allocated vectors to avoid per-frame heap allocations in the focus-follow block
+const _oldTargetPos = new THREE.Vector3();
+const _currentCamPos = new THREE.Vector3();
+const _moveDelta = new THREE.Vector3();
 
 /* mouse move for hover outline */
 let hoveredObject = null;
@@ -275,7 +287,8 @@ window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   composer.setSize(window.innerWidth, window.innerHeight);
 
-  // Update offset if infocard is open
+  // Update offset if infocard is open (query lazily — element is created on first show)
+  const infocardEl = document.getElementById('infocard');
   if (infocardEl && infocardEl.classList.contains('infocard-visible')) {
     updateCameraOffset(true);
   }
@@ -315,30 +328,22 @@ function animate() {
   updateLabels();
 
   if (focusObject && !isTransitioning) {
-    const oldTargetPos = new THREE.Vector3();
-    controls.getTarget(oldTargetPos);
-
+    controls.getTarget(_oldTargetPos);
     focusObject.getWorldPosition(targetPos);
 
-    // Calculate movement delta
-    const delta = targetPos.clone().sub(oldTargetPos);
+    // Calculate movement delta (reuse pre-allocated vector)
+    _moveDelta.copy(targetPos).sub(_oldTargetPos);
 
     // Move controls pivot
-    controls.setTarget(
-      targetPos.x,
-      targetPos.y,
-      targetPos.z,
-      false
-    );
+    controls.setTarget(targetPos.x, targetPos.y, targetPos.z, false);
 
     // Move camera by same delta to "follow" the object (keeping relative position)
-    if (delta.lengthSq() > 0) {
-      const currentCamPos = new THREE.Vector3();
-      controls.getPosition(currentCamPos);
+    if (_moveDelta.lengthSq() > 0) {
+      controls.getPosition(_currentCamPos);
       controls.setPosition(
-        currentCamPos.x + delta.x,
-        currentCamPos.y + delta.y,
-        currentCamPos.z + delta.z,
+        _currentCamPos.x + _moveDelta.x,
+        _currentCamPos.y + _moveDelta.y,
+        _currentCamPos.z + _moveDelta.z,
         false // no transition for this per-frame update
       );
     }

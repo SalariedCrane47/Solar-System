@@ -377,8 +377,11 @@ export function planetsConfig() {
     const uranusOrbit = addRevolutionLine(orbitalParameters.uranus.radius, orbitColors.uranus);
     const neptuneOrbit = addRevolutionLine(orbitalParameters.neptune.radius, orbitColors.uranus);
 
-    const rotationBaseSpeed = 0.002
-    const revolutionBaseSpeed = 0.02
+    const rotationBaseSpeed = 0.002;
+    const revolutionBaseSpeed = 0.02;
+
+    // Pre-allocated Spherical to avoid per-frame heap allocations
+    const _spherical = new THREE.Spherical();
 
     function animatePlanets(timeScale = 1) {
         const r = rotationBaseSpeed * timeScale;
@@ -386,23 +389,17 @@ export function planetsConfig() {
 
         // Mercury
         mercury.rotation.y += speed.rotationSpeeds.mercury * r;
+        orbitalParameters.mercury.theta += speed.revolutionSpeeds.mercury * v;
         mercuryGroup.position.setFromSpherical(
-            new THREE.Spherical(
-                orbitalParameters.mercury.radius,
-                orbitalParameters.mercury.phi,
-                orbitalParameters.mercury.theta += speed.revolutionSpeeds.mercury * v
-            )
+            _spherical.set(orbitalParameters.mercury.radius, orbitalParameters.mercury.phi, orbitalParameters.mercury.theta)
         );
 
         // Venus
         venus.rotation.y += speed.rotationSpeeds.venus * r;
         venusAtmosphereMesh.rotation.y += speed.rotationSpeeds.venus * r;
+        orbitalParameters.venus.theta += speed.revolutionSpeeds.venus * v;
         venusGroup.position.setFromSpherical(
-            new THREE.Spherical(
-                orbitalParameters.venus.radius,
-                orbitalParameters.venus.phi,
-                orbitalParameters.venus.theta += speed.revolutionSpeeds.venus * v
-            )
+            _spherical.set(orbitalParameters.venus.radius, orbitalParameters.venus.phi, orbitalParameters.venus.theta)
         );
 
         // Earth
@@ -415,79 +412,56 @@ export function planetsConfig() {
         // Rotate clouds slightly faster
         earthCloudsMesh.rotation.y += cloudsSpeedMultiplier * earthRotationSpeed;
 
-        // Optional: rotate Fresnel glow with Earth
+        // Rotate Fresnel glow with Earth
         earthGlowMesh.rotation.y += earthRotationSpeed;
 
         // Update orbital position
         orbitalParameters.earth.theta += speed.revolutionSpeeds.earth * v;
         earthGroup.position.setFromSpherical(
-            new THREE.Spherical(
-                orbitalParameters.earth.radius,
-                orbitalParameters.earth.phi,
-                orbitalParameters.earth.theta
-            )
+            _spherical.set(orbitalParameters.earth.radius, orbitalParameters.earth.phi, orbitalParameters.earth.theta)
         );
 
         // Moon rotation and revolution
         moonMesh.rotation.y += 0.5 * r; // Moon's rotation (tidally locked)
+        orbitalParameters.earth.moon.theta += 0.5 * v;
         moonGroup.position.setFromSpherical(
-            new THREE.Spherical(
-                orbitalParameters.earth.moon.radius,
-                orbitalParameters.earth.moon.phi,
-                orbitalParameters.earth.moon.theta += 0.5 * v // Moon revolves around Earth
-            )
+            _spherical.set(orbitalParameters.earth.moon.radius, orbitalParameters.earth.moon.phi, orbitalParameters.earth.moon.theta)
         );
 
         // Mars
         mars.rotation.y += speed.rotationSpeeds.mars * r;
+        orbitalParameters.mars.theta += speed.revolutionSpeeds.mars * v;
         marsGroup.position.setFromSpherical(
-            new THREE.Spherical(
-                orbitalParameters.mars.radius,
-                orbitalParameters.mars.phi,
-                orbitalParameters.mars.theta += speed.revolutionSpeeds.mars * v
-            )
+            _spherical.set(orbitalParameters.mars.radius, orbitalParameters.mars.phi, orbitalParameters.mars.theta)
         );
 
         // Jupiter
         jupiter.rotation.y += speed.rotationSpeeds.jupiter * r;
+        orbitalParameters.jupiter.theta += speed.revolutionSpeeds.jupiter * v;
         jupiterGroup.position.setFromSpherical(
-            new THREE.Spherical(
-                orbitalParameters.jupiter.radius,
-                orbitalParameters.jupiter.phi,
-                orbitalParameters.jupiter.theta += speed.revolutionSpeeds.jupiter * v
-            )
+            _spherical.set(orbitalParameters.jupiter.radius, orbitalParameters.jupiter.phi, orbitalParameters.jupiter.theta)
         );
 
         // Saturn
         saturn.rotation.y += speed.rotationSpeeds.saturn * r;
+        orbitalParameters.saturn.theta += speed.revolutionSpeeds.saturn * v;
         saturnGroup.position.setFromSpherical(
-            new THREE.Spherical(
-                orbitalParameters.saturn.radius,
-                orbitalParameters.saturn.phi,
-                orbitalParameters.saturn.theta += speed.revolutionSpeeds.saturn * v
-            )
+            _spherical.set(orbitalParameters.saturn.radius, orbitalParameters.saturn.phi, orbitalParameters.saturn.theta)
         );
 
         // Uranus
         uranus.rotation.y += speed.rotationSpeeds.uranus * r;
+        orbitalParameters.uranus.theta += speed.revolutionSpeeds.uranus * v; // Fixed: was incorrectly using saturn speed
         uranusGroup.position.setFromSpherical(
-            new THREE.Spherical(
-                orbitalParameters.uranus.radius,
-                orbitalParameters.uranus.phi,
-                orbitalParameters.uranus.theta += speed.revolutionSpeeds.saturn * v
-            )
+            _spherical.set(orbitalParameters.uranus.radius, orbitalParameters.uranus.phi, orbitalParameters.uranus.theta)
         );
 
         // Neptune
         neptune.rotation.y += speed.rotationSpeeds.neptune * r;
+        orbitalParameters.neptune.theta += speed.revolutionSpeeds.neptune * v;
         neptuneGroup.position.setFromSpherical(
-            new THREE.Spherical(
-                orbitalParameters.neptune.radius,
-                orbitalParameters.neptune.phi,
-                orbitalParameters.neptune.theta += speed.revolutionSpeeds.neptune * v
-            )
+            _spherical.set(orbitalParameters.neptune.radius, orbitalParameters.neptune.phi, orbitalParameters.neptune.theta)
         );
-
     }
 
     // Return all the planets group and moon (for click / infocard)
