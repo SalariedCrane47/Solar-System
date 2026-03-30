@@ -4,6 +4,10 @@
     "postprocessing": "^6.38.2",
     "three": "^0.182.0"
   },
+  "scripts": {
+    "dev": "npx vite dev",
+    "build": "npx vite build"
+  },
   "devDependencies": {
     "vite": "^7.3.1"
   }

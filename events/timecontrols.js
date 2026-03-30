@@ -34,7 +34,7 @@ export function init(setTimeScale) {
   btnBack.className = 'timecontrols-btn';
   btnBack.title = 'Slower / Reverse';
   const imgBack = document.createElement('img');
-  imgBack.src = 'assets/controls/backward-solid.png';
+  imgBack.src = 'public/assets/controls/backward-solid.png';
   imgBack.alt = 'Backward';
   imgBack.style.width = '14px';
   imgBack.style.height = '14px';
@@ -53,7 +53,7 @@ export function init(setTimeScale) {
   btnStop.className = 'timecontrols-btn';
   btnStop.title = 'Stop';
   const imgStop = document.createElement('img');
-  imgStop.src = 'assets/controls/pause-solid.png';
+  imgStop.src = 'public/assets/controls/pause-solid.png';
   imgStop.alt = 'Stop';
   imgStop.style.width = '14px';
   imgStop.style.height = '14px';
@@ -70,7 +70,7 @@ export function init(setTimeScale) {
   btnForward.className = 'timecontrols-btn';
   btnForward.title = 'Faster / Forward';
   const imgForward = document.createElement('img');
-  imgForward.src = 'assets/controls/forward-solid.png';
+  imgForward.src = 'public/assets/controls/forward-solid.png';
   imgForward.alt = 'Forward';
   imgForward.style.width = '14px';
   imgForward.style.height = '14px';
