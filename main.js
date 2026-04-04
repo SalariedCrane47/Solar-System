@@ -13,18 +13,57 @@ import { planetsConfig } from '/src/getPlanetsConfig.js';
 import createAsteroidBelt from '/src/getAsteroidBelt.js';
 import { createPlanetLabels } from '/src/getPlanetLabels.js';
 import { orbitalParameters } from './src/data/orbitParam';
+import { imageSources } from './src/data/imageSources';
 import * as infocard from './events/infocard.js';
 import * as timecontrols from './events/timecontrols.js';
 import * as settingsUI from './events/settingsUI.js';
 import * as searchUI from './events/searchUI.js';
 
+<<<<<<< HEAD
+=======
+async function preloadAssets() {
+  const loadingScreen = document.getElementById('loading-screen');
+  const loadingCount = document.getElementById('loading-count');
+  const loadingTotal = document.getElementById('loading-total');
+  const startMenu = document.getElementById('start-menu');
+  
+  const allUrls = [];
+  for (const planet in imageSources) {
+    for (const key in imageSources[planet]) {
+      const url = imageSources[planet][key];
+      if (url) allUrls.push(url);
+    }
+  }
+  
+  loadingTotal.textContent = allUrls.length;
+  
+  let loaded = 0;
+  const updateProgress = () => {
+    loaded++;
+    loadingCount.textContent = loaded;
+  };
+  
+  const promises = allUrls.map(url => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => { updateProgress(); resolve(); };
+      img.onerror = () => { updateProgress(); resolve(); };
+      img.src = url;
+    });
+  });
+  
+  await Promise.all(promises);
+  
+  loadingScreen.classList.add('hidden');
+  startMenu.classList.remove('hidden');
+}
+
+>>>>>>> 44f2e21c295eda6df613d48a1a5cd1d82cef7306
 /* Scene / Camera / Renderer*/
 
 
 const scene = new THREE.Scene();
 let timeScale = 1.0;
-timecontrols.init((scale) => { timeScale = scale; });
-settingsUI.init();
 
 CameraControls.install({ THREE });
 
@@ -89,7 +128,6 @@ controls.autoRotateSpeed = 0.5;
 controls.update(0);
 
 // UI References
-const startMenu = document.getElementById('start-menu');
 const playButton = document.getElementById('play-button');
 
 // Helper: Toggle Game UI
@@ -353,3 +391,11 @@ function animate() {
 }
 
 renderer.setAnimationLoop(animate);
+
+async function init() {
+  await preloadAssets();
+  timecontrols.init((scale) => { timeScale = scale; });
+  settingsUI.init();
+}
+
+init();
