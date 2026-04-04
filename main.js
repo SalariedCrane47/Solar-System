@@ -19,14 +19,13 @@ import * as timecontrols from './events/timecontrols.js';
 import * as settingsUI from './events/settingsUI.js';
 import * as searchUI from './events/searchUI.js';
 
-<<<<<<< HEAD
-=======
+/* Scene / Camera / Renderer*/
 async function preloadAssets() {
   const loadingScreen = document.getElementById('loading-screen');
   const loadingCount = document.getElementById('loading-count');
   const loadingTotal = document.getElementById('loading-total');
   const startMenu = document.getElementById('start-menu');
-  
+
   const allUrls = [];
   for (const planet in imageSources) {
     for (const key in imageSources[planet]) {
@@ -34,15 +33,15 @@ async function preloadAssets() {
       if (url) allUrls.push(url);
     }
   }
-  
+
   loadingTotal.textContent = allUrls.length;
-  
+
   let loaded = 0;
   const updateProgress = () => {
     loaded++;
     loadingCount.textContent = loaded;
   };
-  
+
   const promises = allUrls.map(url => {
     return new Promise((resolve) => {
       const img = new Image();
@@ -51,15 +50,13 @@ async function preloadAssets() {
       img.src = url;
     });
   });
-  
+
   await Promise.all(promises);
-  
+
   loadingScreen.classList.add('hidden');
   startMenu.classList.remove('hidden');
 }
 
->>>>>>> 44f2e21c295eda6df613d48a1a5cd1d82cef7306
-/* Scene / Camera / Renderer*/
 
 
 const scene = new THREE.Scene();
