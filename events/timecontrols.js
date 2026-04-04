@@ -12,7 +12,7 @@ let currentIdx = 5; // Starts at 1x
 export function init(setTimeScale) {
   const panel = document.createElement('div');
   panel.id = 'timecontrols';
-  panel.className = 'timecontrols-panel';
+  panel.className = 'timecontrols-panel game-ui-hidden';
   panel.setAttribute('aria-label', 'Time speed controls');
 
   const label = document.createElement('span');
