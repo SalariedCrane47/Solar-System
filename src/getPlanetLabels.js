@@ -50,7 +50,7 @@ export function createPlanetLabels(planets, camera, getFocusObject, onLabelClick
         label.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('Clicked label:', name);
+
             if (onLabelClick) {
                 onLabelClick(planet);
             }

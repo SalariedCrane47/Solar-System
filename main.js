@@ -20,11 +20,12 @@ import * as settingsUI from './events/settingsUI.js';
 import * as searchUI from './events/searchUI.js';
 
 /* Scene / Camera / Renderer*/
+const loadingScreen = document.getElementById('loading-screen');
+const startMenu = document.getElementById('start-menu');
+
 async function preloadAssets() {
-  const loadingScreen = document.getElementById('loading-screen');
   const loadingCount = document.getElementById('loading-count');
   const loadingTotal = document.getElementById('loading-total');
-  const startMenu = document.getElementById('start-menu');
 
   const allUrls = [];
   for (const planet in imageSources) {
@@ -77,6 +78,8 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.5;
+renderer.domElement.id = 'three-canvas';
+renderer.domElement.style.pointerEvents = 'none';
 document.body.appendChild(renderer.domElement);
 
 /* Post-processing: Bloom + Outline */
@@ -158,6 +161,9 @@ playButton.addEventListener('click', (e) => {
   e.stopPropagation();
 
   gameState.started = true;
+
+  // Enable canvas pointer-events for game interaction
+  renderer.domElement.style.pointerEvents = 'auto';
 
   // Hide menu
   startMenu.classList.add('hidden');
