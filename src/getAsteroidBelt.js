@@ -4,10 +4,24 @@ export default function createAsteroidBelt({ numAsteroids = 1000, innerRadius, o
     const asteroidBelt = new THREE.Group();
 
     for (let i = 0; i < numAsteroids; i++) {
-        const asteroidGeometry = new THREE.IcosahedronGeometry(Math.random() * 0.05, 1); // Random small size
+        const baseSize = Math.random() * 0.05 + 0.01; // ensure a minimum size
+        const asteroidGeometry = new THREE.IcosahedronGeometry(baseSize, 1); // Random small size
+
+        // Deform vertices to create a unique potato-like rock shape
+        const positions = asteroidGeometry.attributes.position;
+        const vertex = new THREE.Vector3();
+        for (let j = 0; j < positions.count; j++) {
+            vertex.fromBufferAttribute(positions, j);
+            vertex.normalize();
+            const distortion = baseSize * (0.7 + Math.random() * 0.6); // Randomize radial distance
+            vertex.multiplyScalar(distortion);
+            positions.setXYZ(j, vertex.x, vertex.y, vertex.z);
+        }
+        asteroidGeometry.computeVertexNormals();
+
         const asteroidMaterial = new THREE.MeshStandardMaterial({
             color: 0x888888, // gray colour
-        })
+        });
 
         // Make asteroid
         const asteroid = new THREE.Mesh(asteroidGeometry, asteroidMaterial);

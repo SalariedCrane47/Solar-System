@@ -5,7 +5,7 @@ import cloudsImg from '/assets/Earth/2k_earth_clouds.jpg';
 import uranusImg from '/assets/Uranus/uranusmap.jpg';
 import UranusRingColor from '/assets/Uranus/uranusringcolour.jpg';
 import UranusRingTrans from '/assets/Uranus/uranusringtrans.gif';
-import sunImg from '/assets/Sun/8k_sun.jpg';
+import sunImg from '/assets/Sun/2k_sun.jpg';
 import mercuryImg from '/assets/Mercury/2k_mercury.jpg';
 import neptuneImg from '/assets/Neptune/2k_neptune.jpg';
 import saturnImg from '/assets/Saturn/2k_saturn.jpg';
@@ -18,7 +18,7 @@ import venusAtmosphereImg from '/assets/Venus/2k_venus_atmosphere.jpg'
 
 export const imageSources = {
     sun: {
-        img: sunImg 
+        img: sunImg
     },
     mercury: {
         img: mercuryImg

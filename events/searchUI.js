@@ -1,4 +1,4 @@
-import { celestialData } from './infocard.js';
+import { celestialData } from '../src/data/celestialData.js';
 
 export function init(clickableObjects, focusOnPlanet) {
   const container = document.createElement('div');

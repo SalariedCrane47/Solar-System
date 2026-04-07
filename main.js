@@ -14,7 +14,12 @@ import createAsteroidBelt from '/src/getAsteroidBelt.js';
 import { createPlanetLabels } from '/src/getPlanetLabels.js';
 import { orbitalParameters } from './src/data/orbitParam';
 import { imageSources } from './src/data/imageSources';
-import * as infocard from './events/infocard.js';
+// infocard is lazy-loaded on first use (see focusOnPlanet)
+let infocard = null;
+async function getInfocard() {
+  if (!infocard) infocard = await import('./events/infocard.js');
+  return infocard;
+}
 import * as timecontrols from './events/timecontrols.js';
 import * as settingsUI from './events/settingsUI.js';
 import * as searchUI from './events/searchUI.js';
@@ -238,7 +243,7 @@ function focusOnPlanet(object) {
   focusObject.getWorldPosition(targetPos);
 
   const name = focusObject.userData?.name;
-  if (name) infocard.show(name, focusObject);
+  if (name) getInfocard().then(ic => ic.show(name, focusObject));
 
   // Zoom in logic:
   const offsetDistance = 5;
