@@ -1,5 +1,8 @@
 import * as THREE from 'three';
 import { celestialData } from '../src/data/celestialData.js';
+import { INFOCARD } from '../src/constants.js';
+import { t } from '../src/i18n/index.js';
+import { showDistanceCalculator } from './distanceCalculator.js';
 export { celestialData };
 
 let cardEl = null;
@@ -8,9 +11,8 @@ let camera = null;
 let renderer = null;
 let planetMesh = null;
 let animationId = null;
-let currentView = 'planet'; // 'planet' or 'layers'
-let currentPlanetName = null;
 let layersMesh = null;
+let currentPlanetName = null;
 
 function ensureCard() {
   if (cardEl) return cardEl;
@@ -23,17 +25,12 @@ function ensureCard() {
       <h2 id="infocard-title"></h2>
       <p id="infocard-type" class="infocard-type"></p>
       <p id="infocard-desc" class="infocard-desc"></p>
+      <button type="button" id="infocard-compare-dist" class="infocard-action-btn"></button>
     </div>
     <div class="infocard-scroll-wrap">
-      <div class="infocard-visual-container">
-        <canvas id="infocard-canvas"></canvas>
-        <!-- Layers toggle disabled for now
-        <div class="infocard-view-toggle">
-          <button class="toggle-btn active" data-view="planet">Planet</button>
-          <button class="toggle-btn" data-view="layers">Layers</button>
+        <div class="infocard-visual-container">
+          <canvas id="infocard-canvas"></canvas>
         </div>
-        -->
-      </div>
       <div id="infocard-orbit" class="infocard-section"></div>
       <div id="infocard-atmosphere" class="infocard-section"></div>
       <div id="infocard-layers" class="infocard-section"></div>
@@ -44,87 +41,15 @@ function ensureCard() {
   const closeBtn = cardEl.querySelector('#infocard-close');
   closeBtn.addEventListener('click', hide);
 
-  // Toggle buttons
-  const toggleBtns = cardEl.querySelectorAll('.toggle-btn');
-  toggleBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const view = btn.getAttribute('data-view');
-      switchView(view);
-    });
+  const compareBtn = cardEl.querySelector('#infocard-compare-dist');
+  compareBtn.addEventListener('click', () => {
+    if (currentPlanetName) {
+      showDistanceCalculator(currentPlanetName);
+    }
   });
 
   return cardEl;
 }
-
-function switchView(view) {
-  if (view === currentView) return;
-
-  currentView = view;
-  const toggleBtns = cardEl.querySelectorAll('.toggle-btn');
-
-  toggleBtns.forEach(btn => {
-    if (btn.getAttribute('data-view') === view) {
-      btn.classList.add('active');
-    } else {
-      btn.classList.remove('active');
-    }
-  });
-
-  if (view === 'layers') {
-    // Hide planet, show layers
-    if (planetMesh) planetMesh.visible = false;
-    if (!layersMesh && currentPlanetName) {
-      layersMesh = createLayersMesh(currentPlanetName);
-      if (layersMesh) scene.add(layersMesh);
-    } else if (layersMesh) {
-      layersMesh.visible = true;
-    }
-  } else {
-    // Show planet, hide layers
-    if (planetMesh) planetMesh.visible = true;
-    if (layersMesh) layersMesh.visible = false;
-  }
-}
-
-function createLayersMesh(planetName) {
-  const data = celestialData[planetName];
-  if (!data || !data.layers || data.layers.length === 0) return null;
-
-  const layersGroup = new THREE.Group();
-  const numLayers = data.layers.length;
-
-  // Color palette for layers
-  const colors = [
-    0xff6b6b, // Core - red
-    0xffa500, // Mantle - orange
-    0xffff00, // Outer layer - yellow
-    0x4ecdc4, // Atmosphere - cyan
-    0x95e1d3, // Upper atmosphere - light cyan
-    0xc7ecee  // Outermost - very light cyan
-  ];
-
-  // Create hemisphere cross-section
-  for (let i = 0; i < numLayers; i++) {
-    const radius = 1 - (i / numLayers) * 0.9; // From 1.0 (core) to 0.1 (outer)
-    const color = colors[numLayers - 1 - i] || 0x888888;
-
-    const geometry = new THREE.SphereGeometry(radius, 32, 32, 0, Math.PI); // Hemisphere
-    const material = new THREE.MeshStandardMaterial({
-      color: color,
-      side: THREE.DoubleSide,
-      metalness: 0.2,
-      roughness: 0.7,
-      transparent: false
-    });
-
-    const hemisphere = new THREE.Mesh(geometry, material);
-    hemisphere.rotation.y = -Math.PI / 2; // Orient to show cross-section
-    layersGroup.add(hemisphere);
-  }
-
-  return layersGroup;
-}
-
 function setupRenderer() {
   if (renderer) return; // Already set up
 
@@ -148,12 +73,11 @@ function setupRenderer() {
   renderer = new THREE.WebGLRenderer({
     canvas,
     antialias: true,
-    alpha: true  // Enable alpha for transparent materials
+    alpha: true, // Enable alpha for transparent materials
   });
   renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.sortObjects = true;  // Ensure transparent objects render correctly
-
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, INFOCARD.MAX_PIXEL_RATIO));
+  renderer.sortObjects = true; // Ensure transparent objects render correctly
 
   // Lighting - brighter setup for better planet visibility
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); // Increased from 0.3
@@ -176,7 +100,7 @@ function setupRenderer() {
 function clonePlanetMesh(original) {
   // Collect original materials in traversal order
   const originalMaterials = [];
-  original.traverse((child) => {
+  original.traverse(child => {
     if (child.isMesh && child.material) {
       originalMaterials.push(child.material);
     }
@@ -187,7 +111,7 @@ function clonePlanetMesh(original) {
 
   // Restore materials in same traversal order
   let index = 0;
-  cloned.traverse((child) => {
+  cloned.traverse(child => {
     if (child.isMesh && index < originalMaterials.length) {
       const origMat = originalMaterials[index];
 
@@ -209,16 +133,20 @@ function clonePlanetMesh(original) {
   return cloned;
 }
 
-// Shared helper — dispose a mesh and all its children's geometry/materials
 function disposeMesh(mesh) {
-  mesh.traverse((child) => {
+  mesh.traverse(child => {
     if (child.geometry) child.geometry.dispose();
     if (child.material) {
-      if (Array.isArray(child.material)) {
-        child.material.forEach((m) => m.dispose());
-      } else {
-        child.material.dispose();
-      }
+      const materials = Array.isArray(child.material) ? child.material : [child.material];
+      materials.forEach(mat => {
+        Object.keys(mat).forEach(prop => {
+          const value = mat[prop];
+          if (value && typeof value === 'object' && value.isTexture) {
+            value.dispose();
+          }
+        });
+        mat.dispose();
+      });
     }
   });
 }
@@ -257,7 +185,7 @@ function startAnimation() {
 
     // Rotate planet
     if (planetMesh) {
-      planetMesh.rotation.y += 0.005;
+      planetMesh.rotation.y += INFOCARD.ROTATION_SPEED;
     }
 
     renderer.render(scene, camera);
@@ -345,12 +273,16 @@ function renderLayers(container, layers) {
   container.innerHTML = `
     <h3 class="infocard-section-title">Struktur internal &amp; komposisi</h3>
     <div class="infocard-layers-list">
-      ${layers.map((layer, i) => `
+      ${layers
+        .map(
+          (layer, i) => `
         <div class="infocard-layer" data-layer="${i}">
           <h4 class="infocard-layer-name">${layer.name}</h4>
           <p class="infocard-layer-composition">${layer.composition}</p>
         </div>
-      `).join('')}
+      `
+        )
+        .join('')}
     </div>
   `;
 }
@@ -364,12 +296,14 @@ export function show(name, planetObject) {
   const data = celestialData[name];
   if (!data) return;
 
+  currentPlanetName = name;
+
   const el = ensureCard();
-  currentPlanetName = name; // Store for layer generation
 
   el.querySelector('#infocard-title').textContent = data.name;
   el.querySelector('#infocard-type').textContent = data.type;
   el.querySelector('#infocard-desc').textContent = data.description;
+  el.querySelector('#infocard-compare-dist').textContent = t('features.distanceCalculator') + ' ⤢';
 
   renderOrbit(el.querySelector('#infocard-orbit'), data.orbit);
   renderAtmosphere(el.querySelector('#infocard-atmosphere'), data.atmosphere);
@@ -379,9 +313,6 @@ export function show(name, planetObject) {
   if (planetObject) {
     renderPlanet(planetObject);
   }
-
-  // Reset to planet view
-  currentView = 'planet';
 
   // Clean up old layers mesh if switching planets (uses disposeMesh helper)
   if (layersMesh) {

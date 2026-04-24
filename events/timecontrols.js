@@ -1,97 +1,83 @@
-/**
- * Time controls to change the speed of the solar system simulation.
- * Call init(setTimeScale) from main.js to connect the UI to the simulation.
- */
+import { onLanguageChange } from '../src/i18n/index.js';
 
 const SPEEDS = [-10, -5, -2, -1, 0, 1, 2, 5, 10];
-let currentIdx = 5; // Starts at 1x
+let currentIdx = 5;
+let setTimeScaleCallback = null;
+const simulationDate = new Date();
 
-/**
- * @param {(scale: number) => void} setTimeScale - Called when user picks a speed (e.g. setTimeScale(2) for 2x).
- */
-export function init(setTimeScale) {
+
+function formatDate(date) {
+  return date.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+export function init(callback) {
+  setTimeScaleCallback = callback;
+
   const panel = document.createElement('div');
   panel.id = 'timecontrols';
   panel.className = 'timecontrols-panel game-ui-hidden';
   panel.setAttribute('aria-label', 'Time speed controls');
 
-  const label = document.createElement('span');
-  label.className = 'timecontrols-label';
-  label.style.minWidth = '35px';
-  label.style.textAlign = 'center';
+  const topRow = document.createElement('div');
+  topRow.className = 'timecontrols-top';
+
+  const dateLabel = document.createElement('div');
+  dateLabel.className = 'timecontrols-date';
+  dateLabel.textContent = formatDate(simulationDate);
+
+  const speedLabel = document.createElement('div');
+  speedLabel.className = 'timecontrols-speed';
 
   const updateUI = () => {
     const speed = SPEEDS[currentIdx];
-    label.textContent = speed === 0 ? '0×' : `${speed}×`;
-    setTimeScale(speed);
+    speedLabel.textContent = speed === 0 ? 'Paused' : `${speed}×`;
+    const slider = document.getElementById('timecontrols-slider');
+    if (slider) {
+      slider.value = currentIdx;
+    }
+    if (setTimeScaleCallback) {
+      setTimeScaleCallback(speed);
+    }
   };
 
-  const wrap = document.createElement('div');
-  wrap.className = 'timecontrols-buttons';
+  topRow.appendChild(dateLabel);
+  topRow.appendChild(speedLabel);
 
-  const btnBack = document.createElement('button');
-  btnBack.type = 'button';
-  btnBack.className = 'timecontrols-btn';
-  btnBack.title = 'Slower / Reverse';
-  const imgBack = document.createElement('img');
-  imgBack.src = '/assets/controls/backward-solid.png';
-  imgBack.alt = 'Backward';
-  imgBack.style.width = '14px';
-  imgBack.style.height = '14px';
-  imgBack.style.display = 'block';
-  imgBack.style.filter = 'brightness(0) invert(0.8)';
-  btnBack.appendChild(imgBack);
-  btnBack.addEventListener('click', () => {
-    if (currentIdx > 0) {
-      currentIdx--;
-      updateUI();
-    }
-  });
+  const sliderRow = document.createElement('div');
+  sliderRow.className = 'timecontrols-timeline';
 
-  const btnStop = document.createElement('button');
-  btnStop.type = 'button';
-  btnStop.className = 'timecontrols-btn';
-  btnStop.title = 'Stop';
-  const imgStop = document.createElement('img');
-  imgStop.src = '/assets/controls/pause-solid.png';
-  imgStop.alt = 'Stop';
-  imgStop.style.width = '14px';
-  imgStop.style.height = '14px';
-  imgStop.style.display = 'block';
-  imgStop.style.filter = 'brightness(0) invert(0.8)';
-  btnStop.appendChild(imgStop);
-  btnStop.addEventListener('click', () => {
-    currentIdx = SPEEDS.indexOf(0);
+  const slider = document.createElement('input');
+  slider.type = 'range';
+  slider.id = 'timecontrols-slider';
+  slider.min = 0;
+  slider.max = SPEEDS.length - 1;
+  slider.value = currentIdx;
+  slider.className = 'timecontrols-slider';
+
+  slider.addEventListener('input', () => {
+    currentIdx = parseInt(slider.value, 10);
     updateUI();
   });
 
-  const btnForward = document.createElement('button');
-  btnForward.type = 'button';
-  btnForward.className = 'timecontrols-btn';
-  btnForward.title = 'Faster / Forward';
-  const imgForward = document.createElement('img');
-  imgForward.src = '/assets/controls/forward-solid.png';
-  imgForward.alt = 'Forward';
-  imgForward.style.width = '14px';
-  imgForward.style.height = '14px';
-  imgForward.style.display = 'block';
-  imgForward.style.filter = 'brightness(0) invert(0.8)';
-  btnForward.appendChild(imgForward);
-  btnForward.addEventListener('click', () => {
-    if (currentIdx < SPEEDS.length - 1) {
-      currentIdx++;
-      updateUI();
-    }
+  window.addEventListener('simulation-time-tick', (e) => {
+    dateLabel.textContent = formatDate(e.detail.date);
   });
 
-  wrap.appendChild(btnBack);
-  wrap.appendChild(btnStop);
-  wrap.appendChild(btnForward);
+  sliderRow.appendChild(slider);
 
-  panel.appendChild(label);
-  panel.appendChild(wrap);
+  panel.appendChild(topRow);
+  panel.appendChild(sliderRow);
   document.body.appendChild(panel);
 
-  // Initialize UI state
+  onLanguageChange(() => {
+    // Buttons are removed, nothing to update here anymore
+  });
+
   updateUI();
 }
+
+

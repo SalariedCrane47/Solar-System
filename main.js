@@ -1,148 +1,138 @@
 import * as THREE from 'three';
-import CameraControls from 'camera-controls';
 import {
-  EffectComposer,
-  RenderPass,
-  EffectPass,
-  BloomEffect,
-  OutlineEffect,
-} from 'postprocessing';
-import getStarfield from '/src/getStars.js';
-import { getSun } from '/src/getSun.js';
-import { planetsConfig } from '/src/getPlanetsConfig.js';
-import createAsteroidBelt from '/src/getAsteroidBelt.js';
-import { createPlanetLabels } from '/src/getPlanetLabels.js';
-import { orbitalParameters } from './src/data/orbitParam';
-import { imageSources } from './src/data/imageSources';
-// infocard is lazy-loaded on first use (see focusOnPlanet)
-let infocard = null;
-async function getInfocard() {
-  if (!infocard) infocard = await import('./events/infocard.js');
-  return infocard;
-}
+  createScene,
+  createCamera,
+  createRenderer,
+  createPostProcessing,
+  createLighting,
+  handleResize,
+} from './src/scene.js';
+import { createControls, enableControls, zoomToOverview } from './src/controls.js';
+import { animate, createRaycaster, handleHover } from './src/animation.js';
+import { setupTouchEvents, createTouchState, focusOnPlanet } from './src/events.js';
+import { state, setTimeScale } from './src/state.js';
+import { checkDeviceCapabilities } from './src/utils/deviceCheck.js';
 import * as timecontrols from './events/timecontrols.js';
 import * as settingsUI from './events/settingsUI.js';
 import * as searchUI from './events/searchUI.js';
+import { initMobileControls } from './events/mobileControls.js';
+import { initLanguageToggle } from './events/languageToggle.js';
+import { initDistanceCalculator } from './events/distanceCalculator.js';
+import * as infocard from './events/infocard.js';
+import { initRegionSelector } from './events/regionSelector.js';
+import { t, onLanguageChange, setLanguage } from './src/i18n/index.js';
+import getStarfield from './src/getStars.js';
+import { getSun, animateSunGroup } from './src/getSun.js';
+import { planetsConfig, getPlanetGroups } from './src/getPlanetsConfig.js';
+import createAsteroidBelt from './src/getAsteroidBelt.js';
+import { createPlanetLabels } from './src/getPlanetLabels.js';
+import { orbitalParameters } from './src/data/orbitParam.js';
+import { ASTEROID_BELT, KUIPER_BELT } from './src/constants.js';
+import { imageSources } from './src/data/imageSources.js';
+import { textureManager } from './src/textureManager.js';
 
-/* Scene / Camera / Renderer*/
+let saturnRing = null;
+let uranusRing = null;
+
+function showDeviceWarning(result) {
+  const warningEl = document.getElementById('device-warning');
+  const detailsEl = document.getElementById('warning-details');
+
+  if (result.warnings.length > 0) {
+    detailsEl.innerHTML = `<ul>${result.warnings.map(w => `<li>${w}</li>`).join('')}</ul>`;
+    warningEl.classList.remove('hidden');
+
+    document.getElementById('proceed-anyway').addEventListener('click', () => {
+      warningEl.classList.add('hidden');
+    });
+  }
+}
+
+if (window.__INITIAL_LANG__) {
+  setLanguage(window.__INITIAL_LANG__);
+}
+
+const deviceCheck = checkDeviceCapabilities();
+if (deviceCheck.warnings.length > 0) {
+  showDeviceWarning(deviceCheck);
+}
+
+function updateI18nText() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    el.textContent = t(key);
+  });
+}
+
 const loadingScreen = document.getElementById('loading-screen');
 const startMenu = document.getElementById('start-menu');
+
+const scene = createScene();
+const camera = createCamera();
+const renderer = createRenderer();
+const { composer, outlineEffect } = createPostProcessing(scene, camera, renderer);
+const { sunlight } = createLighting(scene);
+
+const controls = createControls(camera, renderer.domElement);
+const clock = new THREE.Clock();
+const { raycaster, mouse } = createRaycaster();
+const touchState = createTouchState();
 
 async function preloadAssets() {
   const loadingCount = document.getElementById('loading-count');
   const loadingTotal = document.getElementById('loading-total');
+  const loadingText = document.querySelector('.loading-text');
 
-  const allUrls = [];
-  for (const planet in imageSources) {
-    for (const key in imageSources[planet]) {
-      const url = imageSources[planet][key];
-      if (url) allUrls.push(url);
-    }
-  }
+  loadingTotal.textContent = '...';
+  loadingText.textContent = 'Loading textures...';
 
-  loadingTotal.textContent = allUrls.length;
-
-  let loaded = 0;
-  const updateProgress = () => {
-    loaded++;
+  const planetGroups = getPlanetGroups();
+  textureManager.setProgressCallback((loaded, total, planet) => {
     loadingCount.textContent = loaded;
-  };
+    loadingTotal.textContent = total;
+    loadingText.textContent = `Loading ${planet}...`;
 
-  const promises = allUrls.map(url => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => { updateProgress(); resolve(); };
-      img.onerror = () => { updateProgress(); resolve(); };
-      img.src = url;
-    });
+    if (planetGroups[planet]) {
+      planetGroups[planet].visible = true;
+    }
   });
 
-  await Promise.all(promises);
-
-  loadingScreen.classList.add('hidden');
-  startMenu.classList.remove('hidden');
+  try {
+    await textureManager.loadAll(imageSources);
+  } catch (error) {
+    console.error('Texture preload failed', error);
+  } finally {
+    if (loadingScreen) {
+      loadingScreen.classList.add('hidden');
+      loadingScreen.style.display = 'none';
+      loadingScreen.style.visibility = 'hidden';
+    }
+    if (startMenu) {
+      startMenu.classList.remove('hidden');
+    }
+    state.sceneReady = true;
+  }
 }
 
-
-
-const scene = new THREE.Scene();
-let timeScale = 1.0;
-
-CameraControls.install({ THREE });
-
-const camera = new THREE.PerspectiveCamera(
-  70,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1e9
-);
-camera.position.set(0, 10, 45);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.5;
-renderer.domElement.id = 'three-canvas';
-renderer.domElement.style.pointerEvents = 'none';
-document.body.appendChild(renderer.domElement);
-
-/* Post-processing: Bloom + Outline */
-const composer = new EffectComposer(renderer);
-composer.addPass(new RenderPass(scene, camera));
-
-const bloomEffect = new BloomEffect({
-  luminanceThreshold: 0.4,
-  luminanceSmoothing: 0.6,
-  intensity: 1.2,
-  radius: 0.85,
-  mipmapBlur: true,
-});
-
-const outlineEffect = new OutlineEffect(scene, camera, {
-  edgeStrength: 1.8,
-  visibleEdgeColor: 0x88ccff,
-  hiddenEdgeColor: 0x223344,
-  blur: true,
-  xRay: true,
-});
-
-composer.addPass(new EffectPass(camera, bloomEffect, outlineEffect));
-
-/* Controls */
-
-const controls = new CameraControls(camera, renderer.domElement);
-
-controls.dollySpeed = 0.5;
-controls.truckSpeed = 2.0;
-controls.azimuthRotateSpeed = 0.5;
-controls.polarRotateSpeed = 0.5;
-controls.maxDistance = 200;
-
-// Game State
-const gameState = {
-  started: false
-};
-
-// Initial state: Close to Sun, rotating
-controls.setLookAt(0, 2, 4, 0, 0, 0, false);
-controls.enabled = false;
-controls.autoRotate = true;
-controls.autoRotateSpeed = 0.5;
-
-controls.update(0);
-
-// UI References
-const playButton = document.getElementById('play-button');
-
-// Helper: Toggle Game UI
 function setGameUIVisible(visible) {
   const labelsContainer = document.getElementById('planet-labels-container');
   const timeControls = document.querySelector('.timecontrols-panel');
   const settingsBtn = document.getElementById('settings-btn');
   const searchContainer = document.getElementById('search-container');
-  const infocardEl = document.getElementById('infocard'); // Lazy lookup — element is created on first show()
-  const uiElements = [labelsContainer, timeControls, infocardEl, settingsBtn, searchContainer];
+  const infocardEl = document.getElementById('infocard');
+  const mobileControls = document.getElementById('mobile-controls');
+  const languageToggle = document.getElementById('language-toggle');
+  const regionWrapper = document.getElementById('region-selector-wrapper');
+  const uiElements = [
+    labelsContainer,
+    timeControls,
+    infocardEl,
+    settingsBtn,
+    searchContainer,
+    mobileControls,
+    languageToggle,
+    regionWrapper,
+  ];
 
   uiElements.forEach(el => {
     if (!el) return;
@@ -156,194 +146,140 @@ function setGameUIVisible(visible) {
   });
 }
 
-// Initialize UI as hidden
-// We need to wait for elements to exist (labels are created dynamically)
-// But we can just set the class on creation or loop here if they exist.
-// Since labels are created below, we will call this function AFTER creation.
+const playButton = document.getElementById('play-button');
 
-// Play Button Logic
-playButton.addEventListener('click', (e) => {
+playButton.addEventListener('click', e => {
   e.stopPropagation();
 
-  gameState.started = true;
-
-  // Enable canvas pointer-events for game interaction
+  state.started = true;
   renderer.domElement.style.pointerEvents = 'auto';
-
-  // Hide menu
   startMenu.classList.add('hidden');
-
-  // Show Game UI
   setGameUIVisible(true);
-
-  // Stop rotation
-  controls.autoRotate = false;
-
-  // Enable controls
-  controls.enabled = true;
-
-  // Smoothly zoom out to overview
-  controls.setLookAt(
-    0, 20, 60, // Position
-    0, 0, 0,   // Target
-    true       // Transition
-  );
+  enableControls(controls);
+  zoomToOverview(controls);
 });
 
-/* Starfield*/
-
-const { stars: starfield, animateStars } = getStarfield({
+const {
+  stars: starfield,
+  animateStars,
+  nebula,
+} = getStarfield({
   numStars: 10000,
-  radius: 6000
+  radius: 6000,
 });
+scene.add(nebula);
 scene.add(starfield);
 
-/* Lighting*/
-
-scene.add(new THREE.AmbientLight(0xffffff, 0.15));
-
-const sun = getSun({ size: 20, useGlow: true });
+const sun = getSun();
 scene.add(sun);
 
-const sunlight = new THREE.PointLight(0xffffff, 10, 1000, 0.6);
-sunlight.position.set(0, 0, 0);
-sunlight.castShadow = true;
-scene.add(sunlight);
-
-/* Planets*/
-
-const { planets, orbits, animatePlanets, moons = [] } = planetsConfig();
-planets.forEach(p => scene.add(p));
+const {
+  orbitPlanes,
+  planets,
+  orbits,
+  animatePlanets,
+  moons = [],
+  earthMaterial,
+  saturnMaterial,
+} = planetsConfig();
+orbitPlanes.forEach(p => scene.add(p));
 orbits.forEach(o => scene.add(o));
 
-/* Asteroid Belt*/
+const planetGroups = getPlanetGroups();
+if (planetGroups.saturn) {
+  planetGroups.saturn.traverse(child => {
+    if (child.isMesh && child.geometry?.type === 'RingGeometry') {
+      saturnRing = child;
+    }
+  });
+}
+if (planetGroups.uranus) {
+  planetGroups.uranus.traverse(child => {
+    if (child.isMesh && child.geometry?.type === 'RingGeometry') {
+      uranusRing = child;
+    }
+  });
+}
 
 const { asteroidBelt, animateAsteroids } = createAsteroidBelt({
   innerRadius: orbitalParameters.asteroidBelt.innerRadius,
   outerRadius: orbitalParameters.asteroidBelt.outerRadius,
-  numAsteroids: 2500
+  numAsteroids: ASTEROID_BELT.NUM_ASTEROIDS,
 });
 scene.add(asteroidBelt);
 
-/* Planet Labels*/
-
-/* helper: find planet root */
-function getRootObject(obj) {
-  while (obj.parent && !clickableObjects.includes(obj)) {
-    obj = obj.parent;
-  }
-  return obj;
-}
-
-/* Helper: Focus on a specific planet/object */
-function focusOnPlanet(object) {
-  if (!object) return;
-
-  focusObject = object;
-  focusObject.getWorldPosition(targetPos);
-
-  const name = focusObject.userData?.name;
-  if (name) getInfocard().then(ic => ic.show(name, focusObject));
-
-  // Zoom in logic:
-  const offsetDistance = 5;
-  const viewDir = camera.position.clone().sub(targetPos).normalize();
-  if (viewDir.lengthSq() < 0.0001) viewDir.set(0, 0, 1);
-  const newCamPos = targetPos.clone().add(viewDir.multiplyScalar(offsetDistance));
-
-  isTransitioning = true;
-  controls.setLookAt(
-    newCamPos.x,
-    newCamPos.y,
-    newCamPos.z,
-    targetPos.x,
-    targetPos.y,
-    targetPos.z,
-    true
-  ).then(() => {
-    isTransitioning = false;
-  });
-}
-
-// Pass the focus function to the labels creator
-const { updateLabels, dispose: disposeLabels } = createPlanetLabels(planets, camera, () => focusObject, focusOnPlanet);
-
-// Ensure UI is hidden initially
-setGameUIVisible(false);
-
-/* Raycasting / Interaction*/
-
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
+const { asteroidBelt: kuiperBelt, animateAsteroids: animateKuiperBelt } = createAsteroidBelt({
+  innerRadius: orbitalParameters.kuiperBelt.innerRadius,
+  outerRadius: orbitalParameters.kuiperBelt.outerRadius,
+  numAsteroids: KUIPER_BELT.NUM_ASTEROIDS,
+  color: 0x556677,
+  sizeMultiplier: 8,
+  thickness: 8,
+  emissive: 0x556677,
+  emissiveIntensity: 0.6,
+});
+scene.add(kuiperBelt);
 
 const clickableObjects = [...planets, ...moons, sun];
 
-searchUI.init(clickableObjects, focusOnPlanet);
+const { updateLabels } = createPlanetLabels(
+  planets,
+  camera,
+  () => state.focusObject,
+  () => clickableObjects,
+  obj => focusOnPlanet(obj, camera, controls, infocard.show)
+);
 
-let focusObject = null;
-let isTransitioning = false;
-const targetPos = new THREE.Vector3();
+setGameUIVisible(false);
 
-// Pre-allocated vectors to avoid per-frame heap allocations in the focus-follow block
-const _oldTargetPos = new THREE.Vector3();
-const _currentCamPos = new THREE.Vector3();
-const _moveDelta = new THREE.Vector3();
+searchUI.init(clickableObjects, obj => focusOnPlanet(obj, camera, controls, infocard.show));
 
-/* mouse move for hover outline */
-let hoveredObject = null;
-window.addEventListener('mousemove', e => {
-  if (!gameState.started) return;
+window.addEventListener(
+  'mousemove',
+  handleHover({
+    mouse,
+    camera,
+    raycaster,
+    clickableObjects,
+    outlineEffect,
+  })
+);
 
-  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-  raycaster.setFromCamera(mouse, camera);
-  const hits = raycaster.intersectObjects(clickableObjects, true);
-  const next = hits.length ? getRootObject(hits[0].object) : null;
-  if (next !== hoveredObject) {
-    hoveredObject = next;
-    outlineEffect.setSelection(hoveredObject ? [hoveredObject] : []);
-  }
-});
+setupTouchEvents(touchState, controls, mouse, raycaster, camera, clickableObjects, infocard.show);
 
-/* click to focus */
 window.addEventListener('click', () => {
-  if (!gameState.started) return;
+  if (!state.started) return;
 
   raycaster.setFromCamera(mouse, camera);
   const hits = raycaster.intersectObjects(clickableObjects, true);
   if (!hits.length) return;
 
-  const objectToFocus = getRootObject(hits[0].object);
-  focusOnPlanet(objectToFocus);
+  const objectToFocus = hits[0].object;
+  let obj = objectToFocus;
+  while (obj.parent && !clickableObjects.includes(obj)) {
+    obj = obj.parent;
+  }
+  if (obj && obj.userData?.name) {
+    focusOnPlanet(obj, camera, controls, infocard.show);
+  }
 });
 
-/* cancel follow when user moves camera */
 controls.addEventListener('controlstart', () => {
-  focusObject = null;
-  isTransitioning = false;
+  state.focusObject = null;
+  state.isTransitioning = false;
 });
-
-/* Resize*/
 
 window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
+  handleResize(camera, renderer, composer);
 
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  composer.setSize(window.innerWidth, window.innerHeight);
-
-  // Update offset if infocard is open (query lazily — element is created on first show)
   const infocardEl = document.getElementById('infocard');
   if (infocardEl && infocardEl.classList.contains('infocard-visible')) {
     updateCameraOffset(true);
   }
 });
 
-/* Camera Offset Logic (Infocard) */
 function updateCameraOffset(active) {
   if (active) {
-    // Shift center to the right (3/4 of screen)
-    // Offset x = -width * 0.25 (negative moves the "window" left, so content moves right)
     const width = window.innerWidth;
     const height = window.innerHeight;
     camera.setViewOffset(width, height, -width * 0.25, 0, width, height);
@@ -352,58 +288,59 @@ function updateCameraOffset(active) {
   }
 }
 
-window.addEventListener('infocard-toggled', (e) => {
+window.addEventListener('infocard-toggled', e => {
   updateCameraOffset(e.detail.visible);
-
-  // Also, when infocard opens, we might want to ensure the target is still valid or adjust controls?
-  // CameraControls should respect the projection offset automatically.
 });
 
-/* Animation Loop */
-const clock = new THREE.Clock();
-
-function animate() {
-  const delta = clock.getDelta();
-
-  animateStars(delta);
-  animatePlanets(timeScale);
-  if (animateAsteroids) animateAsteroids(timeScale);
-
-  // Update planet labels
-  updateLabels();
-
-  if (focusObject && !isTransitioning) {
-    controls.getTarget(_oldTargetPos);
-    focusObject.getWorldPosition(targetPos);
-
-    // Calculate movement delta (reuse pre-allocated vector)
-    _moveDelta.copy(targetPos).sub(_oldTargetPos);
-
-    // Move controls pivot
-    controls.setTarget(targetPos.x, targetPos.y, targetPos.z, false);
-
-    // Move camera by same delta to "follow" the object (keeping relative position)
-    if (_moveDelta.lengthSq() > 0) {
-      controls.getPosition(_currentCamPos);
-      controls.setPosition(
-        _currentCamPos.x + _moveDelta.x,
-        _currentCamPos.y + _moveDelta.y,
-        _currentCamPos.z + _moveDelta.z,
-        false // no transition for this per-frame update
-      );
-    }
+window.addEventListener('rings-visibility-change', e => {
+  if (e.detail.saturn !== undefined && saturnRing) {
+    saturnRing.visible = e.detail.saturn;
   }
+  if (e.detail.uranus !== undefined && uranusRing) {
+    uranusRing.visible = e.detail.uranus;
+  }
+});
 
-  controls.update(delta);
-  composer.render(delta);
-}
+window.addEventListener('take-screenshot', () => {
+  renderer.render(scene, camera);
+  const dataURL = renderer.domElement.toDataURL('image/png');
+  const link = document.createElement('a');
+  link.download = `solar-system-${Date.now()}.png`;
+  link.href = dataURL;
+  link.click();
+});
 
-renderer.setAnimationLoop(animate);
+const doAnimate = animate({
+  clock,
+  controls,
+  camera,
+  composer,
+  sun,
+  sunlight,
+  earthMaterial,
+  saturnMaterial,
+  animateStars,
+  animatePlanets,
+  animateSunGroup,
+  animateAsteroids,
+  animateKuiperBelt,
+  updateLabels,
+});
+
+renderer.setAnimationLoop(doAnimate);
 
 async function init() {
   await preloadAssets();
-  timecontrols.init((scale) => { timeScale = scale; });
+  updateI18nText();
+  onLanguageChange(updateI18nText);
+  initLanguageToggle();
+  initDistanceCalculator();
+  timecontrols.init(scale => {
+    setTimeScale(scale);
+  });
   settingsUI.init();
+  initRegionSelector();
+  initMobileControls(controls, () => state.started);
 }
 
 init();

@@ -1,2 +1,12 @@
 node_modules/
 dist/
+tests/
+tests-e2e/
+test-results/
+playwright-report/
+docs/
+.prettierrc/
+playwright.config.js/
+eslint.config.js/
+.editorconfig/
+vitest.config.js/

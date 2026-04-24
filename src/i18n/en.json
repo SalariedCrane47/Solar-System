@@ -1,0 +1,75 @@
+{
+  "app": {
+    "title": "Solar System Explorer",
+    "loading": "Loading Assets...",
+    "explore": "Explore"
+  },
+  "planets": {
+    "sun": "Sun",
+    "mercury": "Mercury",
+    "venus": "Venus",
+    "earth": "Earth",
+    "mars": "Mars",
+    "jupiter": "Jupiter",
+    "saturn": "Saturn",
+    "uranus": "Uranus",
+    "neptune": "Neptune",
+    "pluto": "Pluto",
+    "ceres": "Ceres",
+    "makemake": "Makemake",
+    "eris": "Eris"
+  },
+  "moons": {
+    "moon": "Moon",
+    "phobos": "Phobos",
+    "deimos": "Deimos",
+    "io": "Io",
+    "europa": "Europa",
+    "ganymede": "Ganymede",
+    "callisto": "Callisto",
+    "titan": "Titan",
+    "enceladus": "Enceladus",
+    "triton": "Triton",
+    "charon": "Charon"
+  },
+  "settings": {
+    "title": "Settings",
+    "showLabels": "Show Planet Labels",
+    "showTimeControls": "Show Time Controls",
+    "showRings": "Show Planet Rings"
+  },
+  "timeControls": {
+    "slower": "Slower / Reverse",
+    "stop": "Stop",
+    "faster": "Faster / Forward"
+  },
+  "search": {
+    "placeholder": "Search planets...",
+    "noResults": "No planets found"
+  },
+  "info": {
+    "distanceFromSun": "Distance from Sun",
+    "orbitalPeriod": "Orbital Period",
+    "rotationPeriod": "Rotation Period",
+    "diameter": "Diameter",
+    "temperature": "Temperature",
+    "moons": "Moons",
+    "day": "days",
+    "hours": "hours",
+    "km": "km",
+    "kmAu": "km (AU)"
+  },
+  "features": {
+    "distanceCalculator": "Distance Calculator",
+    "selectPlanet": "Select a planet",
+    "calculate": "Calculate",
+    "distance": "Distance",
+    "au": "AU",
+    "km": "km",
+    "screenshot": "Take Screenshot",
+    "planetCompare": "Compare Planets"
+  },
+  "startMenu": {
+    "subtitle": "Explore our solar system in 3D"
+  }
+}

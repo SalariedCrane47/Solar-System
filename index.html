@@ -1,29 +1,52 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Interactive 3D solar system exploration - Explore planets, moons, and more in your browser"
+    />
+    <meta name="keywords" content="solar system, 3D, planets, space, astronomy, exploration" />
+    <meta name="author" content="Solar System Explorer" />
+    <meta property="og:title" content="Solar System Explorer" />
+    <meta property="og:description" content="Interactive 3D solar system exploration" />
+    <meta property="og:type" content="website" />
     <title>Solar System</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>"
+    />
     <script type="module" src="main.js"></script>
-    <link rel="stylesheet" href="global-config/style.css">
-</head>
+    <link rel="stylesheet" href="global-config/style.css" />
+    <script>
+      window.__INITIAL_LANG__ = localStorage.getItem('language') || 'id';
+    </script>
+  </head>
 
-<body>
+  <body>
+    <div id="device-warning" class="hidden">
+      <div class="warning-modal">
+        <h2>⚠️ Device Warning</h2>
+        <p>Your device may not meet the minimum requirements for this application.</p>
+        <div id="warning-details"></div>
+        <button id="proceed-anyway">Proceed Anyway</button>
+      </div>
+    </div>
     <div id="loading-screen">
-        <div class="loading-content">
-            <div class="loading-spinner"></div>
-            <p class="loading-text">Loading Assets...</p>
-            <p class="loading-progress"><span id="loading-count">0</span> / <span id="loading-total">0</span></p>
-        </div>
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <p class="loading-text" data-i18n="app.loading">Loading Assets...</p>
+        <p class="loading-progress">
+          <span id="loading-count">0</span> / <span id="loading-total">0</span>
+        </p>
+      </div>
     </div>
     <div id="start-menu" class="hidden">
-        <h1>Eksplorasi Antariksa</h1>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Non voluptatem doloribus placeat veritatis ad
-            dolores, odio, harum nostrum neque ab dolor perspiciatis adipisci, dignissimos quos repellendus. Ipsum
-            quaerat corporis commodi.</p>
-        <button id="play-button">Explore</button>
+      <h1 data-i18n="app.title">Eksplorasi Antariksa</h1>
+      <p data-i18n="startMenu.subtitle">Jelajahi tata surya kita dalam 3D</p>
+      <button id="play-button" data-i18n="app.explore">Explore</button>
     </div>
-</body>
-
+  </body>
 </html>

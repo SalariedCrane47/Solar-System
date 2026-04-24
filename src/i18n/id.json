@@ -1,0 +1,75 @@
+{
+  "app": {
+    "title": "Penjelajahan Tata Surya",
+    "loading": "Memuat Aset...",
+    "explore": "Jelajahi"
+  },
+  "planets": {
+    "sun": "Matahari",
+    "mercury": "Merkurius",
+    "venus": "Venus",
+    "earth": "Bumi",
+    "mars": "Mars",
+    "jupiter": "Jupiter",
+    "saturn": "Saturnus",
+    "uranus": "Uranus",
+    "neptune": "Neptunus",
+    "pluto": "Pluto",
+    "ceres": "Ceres",
+    "makemake": "Makemake",
+    "eris": "Eris"
+  },
+  "moons": {
+    "moon": "Bulan",
+    "phobos": "Phobos",
+    "deimos": "Deimos",
+    "io": "Io",
+    "europa": "Europa",
+    "ganymede": "Ganymede",
+    "callisto": "Callisto",
+    "titan": "Titan",
+    "enceladus": "Enceladus",
+    "triton": "Triton",
+    "charon": "Charon"
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "showLabels": "Tampilkan Label Planet",
+    "showTimeControls": "Tampilkan Kontrol Waktu",
+    "showRings": "Tampilkan Cincin Planet"
+  },
+  "timeControls": {
+    "slower": "Lambat / Mundur",
+    "stop": "Berhenti",
+    "faster": "Cepat / Maju"
+  },
+  "search": {
+    "placeholder": "Cari planet...",
+    "noResults": "Planet tidak ditemukan"
+  },
+  "info": {
+    "distanceFromSun": "Jarak dari Matahari",
+    "orbitalPeriod": "Periode Orbit",
+    "rotationPeriod": "Periode Rotasi",
+    "diameter": "Diameter",
+    "temperature": "Suhu",
+    "moons": "Satelit",
+    "day": "hari",
+    "hours": "jam",
+    "km": "km",
+    "kmAu": "km (AU)"
+  },
+  "features": {
+    "distanceCalculator": "Kalkulator Jarak",
+    "selectPlanet": "Pilih planet",
+    "calculate": "Hitung",
+    "distance": "Jarak",
+    "au": "AU",
+    "km": "km",
+    "screenshot": "Ambil Tangkapan Layar",
+    "planetCompare": "Bandingkan Planet"
+  },
+  "startMenu": {
+    "subtitle": "Jelajahi tata surya kita dalam 3D"
+  }
+}
