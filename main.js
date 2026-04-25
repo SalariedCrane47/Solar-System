@@ -15,7 +15,7 @@ import { checkDeviceCapabilities } from './src/utils/deviceCheck.js';
 import * as timecontrols from './events/timecontrols.js';
 import * as settingsUI from './events/settingsUI.js';
 import * as searchUI from './events/searchUI.js';
-import { initMobileControls } from './events/mobileControls.js';
+
 import { initLanguageToggle } from './events/languageToggle.js';
 import { initDistanceCalculator } from './events/distanceCalculator.js';
 import * as infocard from './events/infocard.js';
@@ -120,7 +120,6 @@ function setGameUIVisible(visible) {
   const settingsBtn = document.getElementById('settings-btn');
   const searchContainer = document.getElementById('search-container');
   const infocardEl = document.getElementById('infocard');
-  const mobileControls = document.getElementById('mobile-controls');
   const languageToggle = document.getElementById('language-toggle');
   const regionWrapper = document.getElementById('region-selector-wrapper');
   const uiElements = [
@@ -129,7 +128,6 @@ function setGameUIVisible(visible) {
     infocardEl,
     settingsBtn,
     searchContainer,
-    mobileControls,
     languageToggle,
     regionWrapper,
   ];
@@ -340,7 +338,7 @@ async function init() {
   });
   settingsUI.init();
   initRegionSelector();
-  initMobileControls(controls, () => state.started);
+  
 }
 
 init();
