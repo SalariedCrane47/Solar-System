@@ -169,7 +169,6 @@ export function planetsConfig() {
   });
 
   const moonOrbit = new THREE.Group();
-  moonOrbit.userData = { name: 'Moon' };
   moonOrbit.rotation.x = earthMoonData.tilt;
   const moonGroup = createMoonGroup(earthMoonData, moonMaterial, 6);
   moonOrbit.add(moonGroup);
@@ -1068,7 +1067,7 @@ export function planetsConfig() {
     ],
     animatePlanets,
     moons: [
-      moonOrbit,
+      moonGroup,
       ...marsMoons.map(m => m.group),
       ...jupiterMoons.map(m => m.group),
       ...saturnMoons.map(m => m.group),
