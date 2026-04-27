@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { state, vectors } from './state.js';
 import { getRootObject } from './utils/math.js';
 import { getPlanetGroups } from './getPlanetsConfig.js';
+import { updateScaleIndicator } from '../events/scaleIndicator.js';
 
 export function animate({
   clock,
@@ -16,7 +17,6 @@ export function animate({
   animatePlanets,
   animateSunGroup,
   animateAsteroids,
-  animateKuiperBelt,
   updateLabels,
 }) {
   return function () {
@@ -27,15 +27,16 @@ export function animate({
     animatePlanets(state.timeScale);
     animateSunGroup(sun, time, camera);
     if (animateAsteroids) animateAsteroids(state.timeScale);
-    if (animateKuiperBelt) animateKuiperBelt(state.timeScale);
 
     if (state.timeScale !== 0) {
-      const daysPerFrame = 0.02 * state.timeScale; 
+      const daysPerFrame = 0.02 * state.timeScale;
       const currentMs = state.currentSimulationTime.getTime();
       state.currentSimulationTime.setTime(currentMs + daysPerFrame * 24 * 60 * 60 * 1000);
-      window.dispatchEvent(new CustomEvent('simulation-time-tick', { 
-        detail: { date: state.currentSimulationTime } 
-      }));
+      window.dispatchEvent(
+        new CustomEvent('simulation-time-tick', {
+          detail: { date: state.currentSimulationTime },
+        })
+      );
     }
 
     if (earthMaterial) {
@@ -47,7 +48,9 @@ export function animate({
       const saturnGroup = getPlanetGroups().saturn;
       if (saturnGroup) {
         saturnMaterial.uniforms.u_position.value.copy(saturnGroup.position);
-        saturnMaterial.uniforms.u_sunRelPosition.value.copy(sunlight.position).sub(saturnGroup.position);
+        saturnMaterial.uniforms.u_sunRelPosition.value
+          .copy(sunlight.position)
+          .sub(saturnGroup.position);
       }
     }
 
@@ -70,6 +73,11 @@ export function animate({
     }
 
     controls.update(delta);
+
+    // Update scale indicator with current camera distance
+    const cameraDistance = camera.position.length();
+    updateScaleIndicator(cameraDistance);
+
     updateLabels();
     composer.render(delta);
   };

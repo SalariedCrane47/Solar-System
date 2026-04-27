@@ -11,14 +11,12 @@ import { createControls, enableControls, zoomToOverview } from './src/controls.j
 import { animate, createRaycaster, handleHover } from './src/animation.js';
 import { setupTouchEvents, createTouchState, focusOnPlanet } from './src/events.js';
 import { state, setTimeScale } from './src/state.js';
-import { checkDeviceCapabilities } from './src/utils/deviceCheck.js';
 import * as timecontrols from './events/timecontrols.js';
 import * as settingsUI from './events/settingsUI.js';
 import * as searchUI from './events/searchUI.js';
-
-import { initLanguageToggle } from './events/languageToggle.js';
 import { initDistanceCalculator } from './events/distanceCalculator.js';
 import * as infocard from './events/infocard.js';
+import { initScaleIndicator, showScaleIndicator } from './events/scaleIndicator.js';
 import { initRegionSelector } from './events/regionSelector.js';
 import { t, onLanguageChange, setLanguage } from './src/i18n/index.js';
 import getStarfield from './src/getStars.js';
@@ -27,34 +25,15 @@ import { planetsConfig, getPlanetGroups } from './src/getPlanetsConfig.js';
 import createAsteroidBelt from './src/getAsteroidBelt.js';
 import { createPlanetLabels } from './src/getPlanetLabels.js';
 import { orbitalParameters } from './src/data/orbitParam.js';
-import { ASTEROID_BELT, KUIPER_BELT } from './src/constants.js';
+import { ASTEROID_BELT } from './src/constants.js';
 import { imageSources } from './src/data/imageSources.js';
 import { textureManager } from './src/textureManager.js';
 
 let saturnRing = null;
 let uranusRing = null;
 
-function showDeviceWarning(result) {
-  const warningEl = document.getElementById('device-warning');
-  const detailsEl = document.getElementById('warning-details');
-
-  if (result.warnings.length > 0) {
-    detailsEl.innerHTML = `<ul>${result.warnings.map(w => `<li>${w}</li>`).join('')}</ul>`;
-    warningEl.classList.remove('hidden');
-
-    document.getElementById('proceed-anyway').addEventListener('click', () => {
-      warningEl.classList.add('hidden');
-    });
-  }
-}
-
 if (window.__INITIAL_LANG__) {
   setLanguage(window.__INITIAL_LANG__);
-}
-
-const deviceCheck = checkDeviceCapabilities();
-if (deviceCheck.warnings.length > 0) {
-  showDeviceWarning(deviceCheck);
 }
 
 function updateI18nText() {
@@ -120,16 +99,14 @@ function setGameUIVisible(visible) {
   const settingsBtn = document.getElementById('settings-btn');
   const searchContainer = document.getElementById('search-container');
   const infocardEl = document.getElementById('infocard');
-  const languageToggle = document.getElementById('language-toggle');
-  const regionWrapper = document.getElementById('region-selector-wrapper');
+  const regionSelectorWrapper = document.getElementById('region-selector-wrapper');
   const uiElements = [
     labelsContainer,
     timeControls,
     infocardEl,
     settingsBtn,
     searchContainer,
-    languageToggle,
-    regionWrapper,
+    regionSelectorWrapper,
   ];
 
   uiElements.forEach(el => {
@@ -206,22 +183,11 @@ const { asteroidBelt, animateAsteroids } = createAsteroidBelt({
 });
 scene.add(asteroidBelt);
 
-const { asteroidBelt: kuiperBelt, animateAsteroids: animateKuiperBelt } = createAsteroidBelt({
-  innerRadius: orbitalParameters.kuiperBelt.innerRadius,
-  outerRadius: orbitalParameters.kuiperBelt.outerRadius,
-  numAsteroids: KUIPER_BELT.NUM_ASTEROIDS,
-  color: 0x556677,
-  sizeMultiplier: 8,
-  thickness: 8,
-  emissive: 0x556677,
-  emissiveIntensity: 0.6,
-});
-scene.add(kuiperBelt);
-
 const clickableObjects = [...planets, ...moons, sun];
 
 const { updateLabels } = createPlanetLabels(
   planets,
+  moons,
   camera,
   () => state.focusObject,
   () => clickableObjects,
@@ -321,7 +287,6 @@ const doAnimate = animate({
   animatePlanets,
   animateSunGroup,
   animateAsteroids,
-  animateKuiperBelt,
   updateLabels,
 });
 
@@ -331,14 +296,14 @@ async function init() {
   await preloadAssets();
   updateI18nText();
   onLanguageChange(updateI18nText);
-  initLanguageToggle();
   initDistanceCalculator();
+  initScaleIndicator();
+  showScaleIndicator();
+  initRegionSelector();
   timecontrols.init(scale => {
     setTimeScale(scale);
   });
   settingsUI.init();
-  initRegionSelector();
-  
 }
 
 init();

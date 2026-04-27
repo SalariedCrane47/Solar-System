@@ -7,103 +7,100 @@
 const REGIONS = [
   {
     id: 'inner-planets',
-    label: 'Inner Planets',
+    label: 'Planet Dalam',
     color: '#ff9944',
     gradient: 'linear-gradient(135deg, rgba(255,153,68,0.18) 0%, rgba(255,80,30,0.08) 100%)',
     borderColor: 'rgba(255,153,68,0.5)',
     accentColor: '#ff9944',
     description:
-      'The inner solar system contains four rocky, terrestrial planets — Mercury, Venus, Earth, and Mars — orbiting close to the Sun. These worlds are denser and smaller than the outer gas giants, shaped by intense solar radiation and volcanic forces over billions of years.',
+      'Tata surya bagian dalam mengandung empat planet batu terrestrial — Merkurius, Venus, Bumi, dan Mars — mengorbit dekat ke Matahari. Dunia-dunia ini lebih padat dan lebih kecil daripada raksasa gas luar, dibentuk oleh radiasi matahari yang intens dan kekuatan vulkanik selama miliaran tahun.',
     stats: [
-      { label: 'Planets', value: '4' },
-      { label: 'Distance from Sun', value: '0.39 – 1.52 AU' },
-      { label: 'Dominant type', value: 'Terrestrial (Rocky)' },
-      { label: 'Avg. surface temp.', value: '-88°C to +465°C' },
+      { label: 'Planetnya', value: '4' },
+      { label: 'Jarak dari Matahari', value: '0.39 – 1.52 AU' },
+      { label: 'Tipe dominan', value: 'Terrestrial (Batu)' },
+      { label: 'Suhu permukaan rata-rata', value: '-88°C hingga +465°C' },
     ],
-    members: ['Mercury', 'Venus', 'Earth', 'Mars'],
+    members: ['Merkurius', 'Venus', 'Bumi', 'Mars'],
     highlights: [
-      'Volcanic activity & tectonic forces',
-      'Only region known to host liquid water',
-      'Diverse terrain: plains, craters, valleys',
-      'Intense solar wind exposure',
+      'Aktivitas vulkanik & kekuatan tektonik',
+      'Satu-satunya wilayah yang diketahui menampung air cair',
+      'Medan yang beragam: dataran, kawah, lembah',
+      'Paparan angin surya yang intens',
     ],
-    funFact:
-      "All four inner planets combined are less massive than 1% of Jupiter's mass.",
+    funFact: 'Keempat planet bagian dalam digabungkan lebih kecil dari 1% massa Jupiter.',
   },
   {
     id: 'asteroid-belt',
-    label: 'Asteroid Belt',
+    label: 'Sabuk Asteroid',
     color: '#aabbcc',
     gradient: 'linear-gradient(135deg, rgba(170,187,204,0.18) 0%, rgba(100,120,140,0.08) 100%)',
     borderColor: 'rgba(170,187,204,0.5)',
     accentColor: '#aabbcc',
     description:
-      'Located between Mars and Jupiter, the Main Asteroid Belt is a vast torus of rocky and metallic debris left over from the early solar system. It contains dwarf planet Ceres and millions of asteroids of varying compositions, but is much emptier than sci-fi suggests.',
+      'Terletak antara Mars dan Jupiter, Sabuk Asteroid Utama adalah torsi besar berisi puing-puing berbatu dan logam yang tersisa dari tata surya awal. Ini berisi planet kerdil Ceres dan jutaan asteroid dengan komposisi yang beragam, tetapi jauh lebih kosong dari yang disarankan fiksi ilmiah.',
     stats: [
-      { label: 'Location', value: '2.2 – 3.2 AU' },
-      { label: 'Notable body', value: 'Ceres (dwarf planet)' },
-      { label: 'Total mass', value: '~4% of the Moon' },
-      { label: 'Asteroid count', value: '~2,000,000 known' },
+      { label: 'Lokasi', value: '2.2 – 3.2 AU' },
+      { label: 'Benda penting', value: 'Ceres (planet kerdil)' },
+      { label: 'Total massa', value: '~4% dari Bulan' },
+      { label: 'Jumlah asteroid', value: '~2.000.000 diketahui' },
     ],
-    members: ['Ceres', 'Vesta', 'Pallas', 'Hygiea', '+ millions more'],
+    members: ['Ceres', 'Vesta', 'Pallas', 'Hygiea', '+ jutaan lagi'],
     highlights: [
-      'Home to dwarf planet Ceres',
-      'Rich mix of C-, S-, and M-type asteroids',
-      'Source of most meteorites reaching Earth',
-      "Jupiter's gravity prevents planet formation here",
+      'Rumah planet kerdil Ceres',
+      'Campuran kaya asteroid tipe C-, S-, dan M-',
+      'Sumber sebagian besar meteorit yang mencapai Bumi',
+      'Gravitasi Jupiter mencegah pembentukan planet di sini',
     ],
     funFact:
-      "If all asteroids in the Belt were combined, they'd form a body smaller than our Moon.",
+      'Jika semua asteroid di Sabuk digabungkan, mereka akan membentuk benda yang lebih kecil dari Bulan kita.',
   },
   {
     id: 'outer-planets',
-    label: 'Outer Planets',
+    label: 'Planet Luar',
     color: '#88ccff',
     gradient: 'linear-gradient(135deg, rgba(136,204,255,0.18) 0%, rgba(50,100,200,0.08) 100%)',
     borderColor: 'rgba(136,204,255,0.5)',
     accentColor: '#88ccff',
     description:
-      'Beyond the asteroid belt lie the four giant planets: Jupiter, Saturn, Uranus, and Neptune. They are divided into gas giants (Jupiter & Saturn) and ice giants (Uranus & Neptune). Together they account for over 99% of the mass orbiting the Sun (excluding the Sun itself).',
+      'Di luar sabuk asteroid terletak empat planet raksasa: Jupiter, Saturnus, Uranus, dan Neptunus. Mereka dibagi menjadi raksasa gas (Jupiter & Saturnus) dan raksasa es (Uranus & Neptunus). Bersama-sama mereka menyumbang lebih dari 99% dari massa mengorbit Matahari (tidak termasuk Matahari itu sendiri).',
     stats: [
-      { label: 'Planets', value: '4' },
-      { label: 'Distance from Sun', value: '5.2 – 30 AU' },
-      { label: 'Types', value: 'Gas & Ice Giants' },
-      { label: 'Combined moons', value: '200+' },
+      { label: 'Planetnya', value: '4' },
+      { label: 'Jarak dari Matahari', value: '5.2 – 30 AU' },
+      { label: 'Tipe-tipe', value: 'Raksasa Gas & Es' },
+      { label: 'Bulan gabungan', value: '200+' },
     ],
-    members: ['Jupiter', 'Saturn', 'Uranus', 'Neptune'],
+    members: ['Jupiter', 'Saturnus', 'Uranus', 'Neptunus'],
     highlights: [
-      'Massive ring systems (Saturn, Uranus)',
-      'Potential subsurface oceans on icy moons',
-      'Violent storms larger than planet Earth',
-      'Rich moon systems with 200+ natural satellites',
+      'Sistem cincin masif (Saturnus, Uranus)',
+      'Potensi laut subsurface di bulan es',
+      'Badai kekerasan lebih besar dari planet Bumi',
+      'Sistem bulan kaya dengan 200+ satelit alami',
     ],
-    funFact:
-      "Jupiter's magnetic field is 20,000 times stronger than Earth's.",
+    funFact: 'Medan magnet Jupiter 20.000 kali lebih kuat daripada Bumi.',
   },
   {
     id: 'kuiper-belt',
-    label: 'Kuiper Belt',
+    label: 'Sabuk Kuiper',
     color: '#77eeff',
     gradient: 'linear-gradient(135deg, rgba(119,238,255,0.18) 0%, rgba(30,100,150,0.08) 100%)',
     borderColor: 'rgba(119,238,255,0.5)',
     accentColor: '#77eeff',
     description:
-      "The Kuiper Belt extends from Neptune's orbit outward to roughly 50 AU from the Sun. It is a vast reservoir of icy bodies — remnants of the early solar system — including dwarf planets like Pluto, Makemake, and Haumea. It is the source of short-period comets.",
+      'Sabuk Kuiper memanjang dari orbit Neptunus ke luar sekitar 50 AU dari Matahari. Ini adalah reservoir besar dari benda-benda es — sisa-sisa tata surya awal — termasuk planet kerdil seperti Pluto, Makemake, dan Haumea. Ini adalah sumber komet periode pendek.',
     stats: [
-      { label: 'Location', value: '30 – 50 AU' },
-      { label: 'Notable bodies', value: 'Pluto, Makemake, Haumea, Eris' },
-      { label: 'Objects', value: '100,000+ known' },
-      { label: 'Temperature', value: '~-220°C' },
+      { label: 'Lokasi', value: '30 – 50 AU' },
+      { label: 'Benda penting', value: 'Pluto, Makemake, Haumea, Eris' },
+      { label: 'Objek', value: '100.000+ diketahui' },
+      { label: 'Suhu', value: '~-220°C' },
     ],
-    members: ['Pluto', 'Makemake', 'Haumea', 'Eris', '+ many KBOs'],
+    members: ['Pluto', 'Makemake', 'Haumea', 'Eris', '+ banyak KBO'],
     highlights: [
-      'Vast reservoir of frozen primordial material',
-      'Explored by NASA New Horizons (Pluto 2015)',
-      'Origin of short-period comets',
-      'May contain undiscovered large bodies',
+      'Reservoir luas bahan primordial beku',
+      'Dijelajahi oleh NASA New Horizons (Pluto 2015)',
+      'Asal dari komet periode pendek',
+      'Mungkin berisi benda besar yang belum ditemukan',
     ],
-    funFact:
-      "The Kuiper Belt is 20 times wider and 20–200 times more massive than the asteroid belt.",
+    funFact: 'Sabuk Kuiper 20 kali lebih luas dan 20–200 kali lebih masif daripada sabuk asteroid.',
   },
 ];
 
@@ -126,42 +123,46 @@ function hexToRgba(hex, alpha) {
 function buildInfocard(region) {
   return `
     <div class="region-infocard-inner" style="--region-accent:${region.accentColor}; --region-border:${region.borderColor}; background:${region.gradient}">
-      <button class="region-infocard-close" id="region-infocard-close" aria-label="Close region info">×</button>
+      <button class="region-infocard-close" id="region-infocard-close" aria-label="Tutup info wilayah">×</button>
 
       <div class="region-infocard-header">
         <div>
           <h2 class="region-infocard-title">${region.label}</h2>
-          <p class="region-infocard-subtitle">Solar System Region</p>
+          <p class="region-infocard-subtitle">Wilayah Tata Surya</p>
         </div>
       </div>
 
       <p class="region-infocard-desc">${region.description}</p>
 
       <div class="region-stat-grid">
-        ${region.stats.map(s => `
+        ${region.stats
+          .map(
+            s => `
           <div class="region-stat-card">
             <span class="region-stat-label">${s.label}</span>
             <span class="region-stat-value">${s.value}</span>
           </div>
-        `).join('')}
+        `
+          )
+          .join('')}
       </div>
 
       <div class="region-section">
-        <h3 class="region-section-title">Key Highlights</h3>
+        <h3 class="region-section-title">Sorotan Utama</h3>
         <ul class="region-highlights-list">
           ${region.highlights.map(h => `<li class="region-highlight-item">${h}</li>`).join('')}
         </ul>
       </div>
 
       <div class="region-section">
-        <h3 class="region-section-title">Members</h3>
+        <h3 class="region-section-title">Anggota</h3>
         <div class="region-members-row">
           ${region.members.map(m => `<span class="region-member-tag">${m}</span>`).join('')}
         </div>
       </div>
 
       <div class="region-funfact">
-        <span class="region-funfact-label">Fun Fact</span>
+        <span class="region-funfact-label">Fakta Menyenangkan</span>
         <p class="region-funfact-text">${region.funFact}</p>
       </div>
     </div>
@@ -298,14 +299,14 @@ export function initRegionSelector() {
   const btn = document.createElement('button');
   btn.id = 'region-selector-btn';
   btn.className = 'region-selector-btn';
-  btn.setAttribute('aria-label', 'Explore Solar System Regions');
+  btn.setAttribute('aria-label', 'Jelajahi Wilayah Tata Surya');
   btn.innerHTML = `
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
       <circle cx="12" cy="12" r="10"/>
       <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
       <line x1="2" y1="12" x2="22" y2="12"/>
     </svg>
-    <span class="region-btn-text">Regions</span>
+    <span class="region-btn-text">Wilayah</span>
     <svg class="region-btn-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <polyline points="6 9 12 15 18 9"/>
     </svg>
@@ -315,7 +316,7 @@ export function initRegionSelector() {
   dropdownEl = document.createElement('div');
   dropdownEl.id = 'region-dropdown';
   dropdownEl.className = 'region-dropdown region-dropdown-hidden';
-  dropdownEl.innerHTML = `<div class="region-dropdown-label">Solar System Regions</div>`;
+  dropdownEl.innerHTML = `<div class="region-dropdown-label">Wilayah Tata Surya</div>`;
 
   buildDropdown();
 

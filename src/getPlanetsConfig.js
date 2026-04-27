@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { imageSources } from './data/imageSources';
 import { orbitalParameters, orbitColors } from './data/orbitParam';
 import { speed } from './data/rotateAndRevolt';
@@ -696,50 +695,6 @@ export function planetsConfig() {
   );
   erisOrbitPlane.add(erisSystemGroup);
 
-  // Haumea (3D model from assets)
-  const haumeaOrbitPlane = createOrbitPlaneGroup(
-    orbitalParameters.haumea.inclination,
-    orbitalParameters.haumea.ascendingNode
-  );
-  const haumeaGroup = new THREE.Group();
-  haumeaGroup.userData = { name: 'Haumea', color: orbitColors.haumea };
-
-  const haumeaBody = new THREE.Group();
-  haumeaBody.userData = { name: 'Haumea', color: orbitColors.haumea }; // for raycaster
-  haumeaGroup.add(haumeaBody);
-
-  const gltfLoader = new GLTFLoader();
-  gltfLoader.load('/3D assets/Haumea_1_1000.glb', (gltf) => {
-    const model = gltf.scene;
-    
-    // Normalize scale robustly regardless of model's original dimensions
-    const box = new THREE.Box3().setFromObject(model);
-    const size = box.getSize(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z);
-    
-    // Target diameter should be 2 * size to match radius scaling
-    const targetDiameter = 2 * orbitalParameters.haumea.size;
-    const scaleFactor = targetDiameter / maxDim;
-    model.scale.setScalar(scaleFactor);
-    
-    // Center it
-    const scaledBox = new THREE.Box3().setFromObject(model);
-    const center = scaledBox.getCenter(new THREE.Vector3());
-    model.position.sub(center);
-
-    haumeaBody.add(model);
-  });
-
-  haumeaGroup.position.copy(
-    setEllipticalPosition(
-      orbitalParameters.haumea.semiMajorAxis,
-      orbitalParameters.haumea.eccentricity,
-      orbitalParameters.haumea.theta
-    )
-  );
-  haumeaGroup.rotation.z = orbitalParameters.haumea.tilt;
-  haumeaOrbitPlane.add(haumeaGroup);
-
   // Orbit lines (each wrapped in an inclined orbit-plane group)
   const mercuryOrbit = createOrbitLine(
     orbitalParameters.mercury.semiMajorAxis,
@@ -825,13 +780,6 @@ export function planetsConfig() {
     orbitalParameters.eris.inclination,
     orbitalParameters.eris.ascendingNode
   );
-  const haumeaOrbit = createOrbitLine(
-    orbitalParameters.haumea.semiMajorAxis,
-    orbitalParameters.haumea.eccentricity,
-    orbitColors.haumea,
-    orbitalParameters.haumea.inclination,
-    orbitalParameters.haumea.ascendingNode
-  );
 
   const rotationBaseSpeed = 0.002;
   const revolutionBaseSpeed = 0.02;
@@ -914,8 +862,7 @@ export function planetsConfig() {
 
     // Mars moons animation
     marsMoons.forEach(moon => {
-      const orbitalSpeed = 0.5 * v / Math.pow(moon.data.radius || 1, 1.5);
-      moon.data.theta += orbitalSpeed;
+      moon.data.theta += 0.8 * v;
       const s = _getSpherical().set(moon.data.radius, moon.data.phi, moon.data.theta);
       moon.group.position.setFromSpherical(s);
       _releaseSpherical(s);
@@ -935,8 +882,7 @@ export function planetsConfig() {
 
     // Jupiter moons animation
     jupiterMoons.forEach(moon => {
-      const orbitalSpeed = 1.2 * v / Math.pow(moon.data.radius || 1, 1.5);
-      moon.data.theta += orbitalSpeed;
+      moon.data.theta += 0.6 * v;
       const s = _getSpherical().set(moon.data.radius, moon.data.phi, moon.data.theta);
       moon.group.position.setFromSpherical(s);
       _releaseSpherical(s);
@@ -956,8 +902,7 @@ export function planetsConfig() {
 
     // Saturn moons animation
     saturnMoons.forEach(moon => {
-      const orbitalSpeed = 2.0 * v / Math.pow(moon.data.radius || 1, 1.5);
-      moon.data.theta += orbitalSpeed;
+      moon.data.theta += 0.5 * v;
       const s = _getSpherical().set(moon.data.radius, moon.data.phi, moon.data.theta);
       moon.group.position.setFromSpherical(s);
       _releaseSpherical(s);
@@ -989,8 +934,7 @@ export function planetsConfig() {
 
     // Neptune moons animation
     neptuneMoons.forEach(moon => {
-      const orbitalSpeed = 0.4 * v / Math.pow(moon.data.radius || 1, 1.5);
-      moon.data.theta += orbitalSpeed;
+      moon.data.theta += 0.4 * v;
       const s = _getSpherical().set(moon.data.radius, moon.data.phi, moon.data.theta);
       moon.group.position.setFromSpherical(s);
       _releaseSpherical(s);
@@ -1061,17 +1005,6 @@ export function planetsConfig() {
     );
     dysnomiaGroup.position.setFromSpherical(dysnomiaSpherical);
     _releaseSpherical(dysnomiaSpherical);
-
-    // Haumea
-    haumeaBody.rotation.y += speed.rotationSpeeds.haumea * r;
-    orbitalParameters.haumea.theta += speed.revolutionSpeeds.haumea * v;
-    haumeaGroup.position.copy(
-      setEllipticalPosition(
-        orbitalParameters.haumea.semiMajorAxis,
-        orbitalParameters.haumea.eccentricity,
-        orbitalParameters.haumea.theta
-      )
-    );
   }
 
   // Return all the planets group and moon (for click / infocard)
@@ -1088,7 +1021,6 @@ export function planetsConfig() {
   planetGroupsMap.pluto = plutoSystemGroup;
   planetGroupsMap.makemake = makemakeGroup;
   planetGroupsMap.eris = erisSystemGroup;
-  planetGroupsMap.haumea = haumeaGroup;
 
   return {
     // Return the orbit-plane groups (top-level scene objects) instead of bare planet groups
@@ -1105,7 +1037,6 @@ export function planetsConfig() {
       plutoOrbitPlane,
       makemakeOrbitPlane,
       erisOrbitPlane,
-      haumeaOrbitPlane,
     ],
     planets: [
       mercuryGroup,
@@ -1120,7 +1051,6 @@ export function planetsConfig() {
       plutoSystemGroup,
       makemakeGroup,
       erisSystemGroup,
-      haumeaGroup,
     ],
     orbits: [
       mercuryOrbit,
@@ -1135,7 +1065,6 @@ export function planetsConfig() {
       plutoOrbit,
       makemakeOrbit,
       erisOrbit,
-      haumeaOrbit,
     ],
     animatePlanets,
     moons: [
@@ -1144,6 +1073,8 @@ export function planetsConfig() {
       ...jupiterMoons.map(m => m.group),
       ...saturnMoons.map(m => m.group),
       ...neptuneMoons.map(m => m.group),
+      charonGroup,
+      dysnomiaGroup,
     ],
     earthMaterial,
     saturnMaterial,
