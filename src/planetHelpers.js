@@ -70,6 +70,7 @@ export function createPlanetGroup({
   color,
   size,
   textureUrl,
+  modelUrl,
   material,
   detail = 6,
   tilt = 0,
@@ -83,13 +84,41 @@ export function createPlanetGroup({
   const planetGroup = new THREE.Group();
   planetGroup.userData = { name, color };
 
-  const geometry = new THREE.IcosahedronGeometry(size, detail);
-  const planetMaterial =
-    material ||
-    new THREE.MeshStandardMaterial({
-      map: textureUrl ? textureLoader.load(textureUrl) : null,
+  let planet;
+  let geometry;
+  let planetMaterial;
+
+  if (modelUrl) {
+    if (!gltfLoader) {
+      gltfLoader = new GLTFLoader();
+    }
+    planet = new THREE.Group(); // Placeholder until model loads
+    gltfLoader.load(modelUrl, (gltf) => {
+      const model = gltf.scene;
+      
+      const box = new THREE.Box3().setFromObject(model);
+      const mSize = box.getSize(new THREE.Vector3());
+      const maxDim = Math.max(mSize.x, mSize.y, mSize.z);
+      
+      const targetDiameter = 2 * size;
+      const scaleFactor = targetDiameter / maxDim;
+      model.scale.setScalar(scaleFactor);
+      
+      const scaledBox = new THREE.Box3().setFromObject(model);
+      const center = scaledBox.getCenter(new THREE.Vector3());
+      model.position.sub(center);
+
+      planet.add(model);
     });
-  const planet = new THREE.Mesh(geometry, planetMaterial);
+  } else {
+    geometry = new THREE.IcosahedronGeometry(size, detail);
+    planetMaterial =
+      material ||
+      new THREE.MeshStandardMaterial({
+        map: textureUrl ? textureLoader.load(textureUrl) : null,
+      });
+    planet = new THREE.Mesh(geometry, planetMaterial);
+  }
 
   planetGroup.add(planet);
   planetGroup.position.copy(setEllipticalPosition(semiMajorAxis, eccentricity, theta));

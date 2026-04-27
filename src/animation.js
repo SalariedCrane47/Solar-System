@@ -17,6 +17,7 @@ export function animate({
   animatePlanets,
   animateSunGroup,
   animateAsteroids,
+  animateKuiperBelt,
   updateLabels,
 }) {
   return function () {
@@ -27,6 +28,7 @@ export function animate({
     animatePlanets(state.timeScale);
     animateSunGroup(sun, time, camera);
     if (animateAsteroids) animateAsteroids(state.timeScale);
+    if (animateKuiperBelt) animateKuiperBelt(state.timeScale);
 
     if (state.timeScale !== 0) {
       const daysPerFrame = 0.02 * state.timeScale;

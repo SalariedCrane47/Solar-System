@@ -25,7 +25,7 @@ import { planetsConfig, getPlanetGroups } from './src/getPlanetsConfig.js';
 import createAsteroidBelt from './src/getAsteroidBelt.js';
 import { createPlanetLabels } from './src/getPlanetLabels.js';
 import { orbitalParameters } from './src/data/orbitParam.js';
-import { ASTEROID_BELT } from './src/constants.js';
+import { ASTEROID_BELT, KUIPER_BELT } from './src/constants.js';
 import { imageSources } from './src/data/imageSources.js';
 import { textureManager } from './src/textureManager.js';
 
@@ -183,6 +183,17 @@ const { asteroidBelt, animateAsteroids } = createAsteroidBelt({
 });
 scene.add(asteroidBelt);
 
+const { asteroidBelt: kuiperBelt, animateAsteroids: animateKuiperBelt } = createAsteroidBelt({
+  innerRadius: orbitalParameters.kuiperBelt.innerRadius,
+  outerRadius: orbitalParameters.kuiperBelt.outerRadius,
+  numAsteroids: KUIPER_BELT.NUM_ASTEROIDS,
+  sizeMultiplier: 1.5,
+  color: 0xaaddff,
+  emissive: 0x223344,
+  emissiveIntensity: 0.8,
+});
+scene.add(kuiperBelt);
+
 const clickableObjects = [...planets, ...moons, sun];
 
 const { updateLabels } = createPlanetLabels(
@@ -287,6 +298,7 @@ const doAnimate = animate({
   animatePlanets,
   animateSunGroup,
   animateAsteroids,
+  animateKuiperBelt,
   updateLabels,
 });
 

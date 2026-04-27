@@ -694,6 +694,25 @@ export function planetsConfig() {
   );
   erisOrbitPlane.add(erisSystemGroup);
 
+  // Haumea
+  const haumeaOrbitPlane = createOrbitPlaneGroup(
+    orbitalParameters.haumea.inclination,
+    orbitalParameters.haumea.ascendingNode
+  );
+  const { planetGroup: haumeaGroup, planet: haumea } = createPlanetGroup({
+    name: 'Haumea',
+    color: orbitColors.haumea,
+    size: orbitalParameters.haumea.size,
+    modelUrl: '/3D assets/Haumea_1_1000.glb',
+    tilt: orbitalParameters.haumea.tilt,
+    inclination: orbitalParameters.haumea.inclination,
+    ascendingNode: orbitalParameters.haumea.ascendingNode,
+    semiMajorAxis: orbitalParameters.haumea.semiMajorAxis,
+    eccentricity: orbitalParameters.haumea.eccentricity,
+    theta: orbitalParameters.haumea.theta,
+  });
+  haumeaOrbitPlane.add(haumeaGroup);
+
   // Orbit lines (each wrapped in an inclined orbit-plane group)
   const mercuryOrbit = createOrbitLine(
     orbitalParameters.mercury.semiMajorAxis,
@@ -778,6 +797,13 @@ export function planetsConfig() {
     orbitColors.eris,
     orbitalParameters.eris.inclination,
     orbitalParameters.eris.ascendingNode
+  );
+  const haumeaOrbit = createOrbitLine(
+    orbitalParameters.haumea.semiMajorAxis,
+    orbitalParameters.haumea.eccentricity,
+    orbitColors.haumea,
+    orbitalParameters.haumea.inclination,
+    orbitalParameters.haumea.ascendingNode
   );
 
   const rotationBaseSpeed = 0.002;
@@ -1004,6 +1030,17 @@ export function planetsConfig() {
     );
     dysnomiaGroup.position.setFromSpherical(dysnomiaSpherical);
     _releaseSpherical(dysnomiaSpherical);
+
+    // Haumea
+    haumea.rotation.y += speed.rotationSpeeds.haumea * r;
+    orbitalParameters.haumea.theta += speed.revolutionSpeeds.haumea * v;
+    haumeaGroup.position.copy(
+      setEllipticalPosition(
+        orbitalParameters.haumea.semiMajorAxis,
+        orbitalParameters.haumea.eccentricity,
+        orbitalParameters.haumea.theta
+      )
+    );
   }
 
   // Return all the planets group and moon (for click / infocard)
@@ -1020,6 +1057,7 @@ export function planetsConfig() {
   planetGroupsMap.pluto = plutoSystemGroup;
   planetGroupsMap.makemake = makemakeGroup;
   planetGroupsMap.eris = erisSystemGroup;
+  planetGroupsMap.haumea = haumeaGroup;
 
   return {
     // Return the orbit-plane groups (top-level scene objects) instead of bare planet groups
@@ -1036,6 +1074,7 @@ export function planetsConfig() {
       plutoOrbitPlane,
       makemakeOrbitPlane,
       erisOrbitPlane,
+      haumeaOrbitPlane,
     ],
     planets: [
       mercuryGroup,
@@ -1050,6 +1089,7 @@ export function planetsConfig() {
       plutoSystemGroup,
       makemakeGroup,
       erisSystemGroup,
+      haumeaGroup,
     ],
     orbits: [
       mercuryOrbit,
@@ -1064,6 +1104,7 @@ export function planetsConfig() {
       plutoOrbit,
       makemakeOrbit,
       erisOrbit,
+      haumeaOrbit,
     ],
     animatePlanets,
     moons: [
