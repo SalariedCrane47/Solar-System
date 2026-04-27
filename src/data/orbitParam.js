@@ -6,6 +6,9 @@ export const degToRad = deg => (deg * Math.PI) / 180;
 // Orbital inclination: angle of orbit plane relative to the ecliptic (Earth's plane)
 // Longitude of ascending node (Ω): angle along ecliptic to where the orbit rises above it
 export const orbitalParameters = {
+  sun: {
+    semiMajorAxis: 0,
+  },
   mercury: {
     semiMajorAxis: BASE_DISTANCE * 1,
     eccentricity: 0.205,
