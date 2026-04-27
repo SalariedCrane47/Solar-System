@@ -1683,7 +1683,7 @@ body {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-  min-width: 220px;
+  min-width: 160px;
   background: linear-gradient(135deg, rgba(10, 14, 28, 0.96) 0%, rgba(8, 10, 22, 0.98) 100%);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
