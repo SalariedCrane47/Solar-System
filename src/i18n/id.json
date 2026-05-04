@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "Penjelajahan Tata Surya",
+    "title": "SolarScope",
     "loading": "Memuat Aset...",
     "explore": "Jelajahi"
   },
@@ -71,6 +71,6 @@
     "planetCompare": "Bandingkan Planet"
   },
   "startMenu": {
-    "subtitle": "Jelajahi tata surya kita dalam 3D"
+    "subtitle": "Alam semesta bukan hanya untuk dilihat, tapi untuk dipahami. Mulai eksplorasimu sekarang."
   }
 }
