@@ -36,8 +36,7 @@
   "settings": {
     "title": "Settings",
     "showLabels": "Show Planet Labels",
-    "showTimeControls": "Show Time Controls",
-    "showRings": "Show Planet Rings"
+    "showTimeControls": "Show Time Controls"
   },
   "timeControls": {
     "slower": "Slower / Reverse",
@@ -67,7 +66,6 @@
     "distance": "Distance",
     "au": "AU",
     "km": "km",
-    "screenshot": "Take Screenshot",
     "planetCompare": "Compare Planets"
   },
   "startMenu": {

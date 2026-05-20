@@ -3,6 +3,7 @@
  * A dropdown button that lists solar system regions.
  * When a region is selected it gets highlighted and a rich infocard appears.
  */
+import { hide as hideInfocard } from './infocard.js';
 
 const REGIONS = [
   {
@@ -13,21 +14,22 @@ const REGIONS = [
     borderColor: 'rgba(255,153,68,0.5)',
     accentColor: '#ff9944',
     description:
-      'Tata surya bagian dalam mengandung empat planet batu terrestrial — Merkurius, Venus, Bumi, dan Mars — mengorbit dekat ke Matahari. Dunia-dunia ini lebih padat dan lebih kecil daripada raksasa gas luar, dibentuk oleh radiasi matahari yang intens dan kekuatan vulkanik selama miliaran tahun.',
+      'Wilayah tata surya bagian dalam terdiri dari empat planet berbatu: Merkurius, Venus, Bumi, dan Mars. Planet-planet ini mengorbit relatif dekat dengan Matahari, memiliki permukaan padat, serta kepadatan tinggi dibanding planet luar.',
     stats: [
-      { label: 'Planetnya', value: '4' },
+      { label: 'Jumlah planet', value: '4' },
       { label: 'Jarak dari Matahari', value: '0.39 – 1.52 AU' },
-      { label: 'Tipe dominan', value: 'Terrestrial (Batu)' },
-      { label: 'Suhu permukaan rata-rata', value: '-88°C hingga +465°C' },
+      { label: 'Tipe dominan', value: 'Planet terestrial (berbatu)' },
+      { label: 'Suhu permukaan', value: '-88°C hingga +465°C' },
     ],
     members: ['Merkurius', 'Venus', 'Bumi', 'Mars'],
     highlights: [
-      'Aktivitas vulkanik & kekuatan tektonik',
-      'Satu-satunya wilayah yang diketahui menampung air cair',
-      'Medan yang beragam: dataran, kawah, lembah',
-      'Paparan angin surya yang intens',
+      'Memiliki permukaan padat dengan kawah, gunung, dan lembah',
+      'Aktivitas vulkanik dan tektonik membentuk banyak wilayah permukaan',
+      'Bumi menjadi satu-satunya planet yang diketahui mendukung kehidupan',
+      'Terpapar radiasi dan angin Matahari yang lebih kuat dibanding planet luar',
     ],
-    funFact: 'Keempat planet bagian dalam digabungkan lebih kecil dari 1% massa Jupiter.',
+    funFact:
+      'Gabungan massa seluruh planet dalam masih jauh lebih kecil dibanding massa Jupiter.',
   },
   {
     id: 'asteroid-belt',
@@ -37,22 +39,22 @@ const REGIONS = [
     borderColor: 'rgba(170,187,204,0.5)',
     accentColor: '#aabbcc',
     description:
-      'Terletak antara Mars dan Jupiter, Sabuk Asteroid Utama adalah torsi besar berisi puing-puing berbatu dan logam yang tersisa dari tata surya awal. Ini berisi planet kerdil Ceres dan jutaan asteroid dengan komposisi yang beragam, tetapi jauh lebih kosong dari yang disarankan fiksi ilmiah.',
+      'Sabuk Asteroid berada di antara orbit Mars dan Jupiter. Wilayah ini dipenuhi jutaan objek berbatu dan logam yang merupakan sisa pembentukan awal tata surya, termasuk planet kerdil Ceres.',
     stats: [
       { label: 'Lokasi', value: '2.2 – 3.2 AU' },
-      { label: 'Benda penting', value: 'Ceres (planet kerdil)' },
-      { label: 'Total massa', value: '~4% dari Bulan' },
-      { label: 'Jumlah asteroid', value: '~2.000.000 diketahui' },
+      { label: 'Objek terbesar', value: 'Ceres' },
+      { label: 'Total massa', value: '~4% massa Bulan' },
+      { label: 'Objek teridentifikasi', value: 'Jutaan asteroid' },
     ],
-    members: ['Ceres', 'Vesta', 'Pallas', 'Hygiea', '+ jutaan lagi'],
+    members: ['Ceres', 'Vesta', 'Pallas', 'Hygiea', '+ jutaan lainnya'],
     highlights: [
-      'Rumah planet kerdil Ceres',
-      'Campuran kaya asteroid tipe C-, S-, dan M-',
-      'Sumber sebagian besar meteorit yang mencapai Bumi',
-      'Gravitasi Jupiter mencegah pembentukan planet di sini',
+      'Menjadi rumah bagi planet kerdil Ceres',
+      'Berisi asteroid kaya karbon, silikat, dan logam',
+      'Sebagian besar meteorit yang jatuh ke Bumi berasal dari wilayah ini',
+      'Gravitasi Jupiter menghambat pembentukan planet baru di area sabuk',
     ],
     funFact:
-      'Jika semua asteroid di Sabuk digabungkan, mereka akan membentuk benda yang lebih kecil dari Bulan kita.',
+      'Jika seluruh asteroid di sabuk ini digabungkan, massanya tetap lebih kecil dari Bulan Bumi.',
   },
   {
     id: 'outer-planets',
@@ -62,21 +64,22 @@ const REGIONS = [
     borderColor: 'rgba(136,204,255,0.5)',
     accentColor: '#88ccff',
     description:
-      'Di luar sabuk asteroid terletak empat planet raksasa: Jupiter, Saturnus, Uranus, dan Neptunus. Mereka dibagi menjadi raksasa gas (Jupiter & Saturnus) dan raksasa es (Uranus & Neptunus). Bersama-sama mereka menyumbang lebih dari 99% dari massa mengorbit Matahari (tidak termasuk Matahari itu sendiri).',
+      'Di luar Sabuk Asteroid terdapat empat planet raksasa: Jupiter, Saturnus, Uranus, dan Neptunus. Jupiter dan Saturnus tergolong raksasa gas, sedangkan Uranus dan Neptunus dikenal sebagai raksasa es.',
     stats: [
-      { label: 'Planetnya', value: '4' },
+      { label: 'Jumlah planet', value: '4' },
       { label: 'Jarak dari Matahari', value: '5.2 – 30 AU' },
-      { label: 'Tipe-tipe', value: 'Raksasa Gas & Es' },
-      { label: 'Bulan gabungan', value: '200+' },
+      { label: 'Jenis utama', value: 'Raksasa gas & raksasa es' },
+      { label: 'Satelit alami diketahui', value: '200+' },
     ],
     members: ['Jupiter', 'Saturnus', 'Uranus', 'Neptunus'],
     highlights: [
-      'Sistem cincin masif (Saturnus, Uranus)',
-      'Potensi laut subsurface di bulan es',
-      'Badai kekerasan lebih besar dari planet Bumi',
-      'Sistem bulan kaya dengan 200+ satelit alami',
+      'Menyimpan sebagian besar massa planet di tata surya',
+      'Memiliki sistem cincin yang kompleks',
+      'Beberapa bulan es diperkirakan memiliki lautan bawah permukaan',
+      'Badai raksasa dapat berlangsung selama puluhan hingga ratusan tahun',
     ],
-    funFact: 'Medan magnet Jupiter 20.000 kali lebih kuat daripada Bumi.',
+    funFact:
+      'Medan magnet Jupiter termasuk yang paling kuat di tata surya dan sekitar 20.000 kali lebih kuat daripada Bumi.',
   },
   {
     id: 'kuiper-belt',
@@ -86,21 +89,22 @@ const REGIONS = [
     borderColor: 'rgba(119,238,255,0.5)',
     accentColor: '#77eeff',
     description:
-      'Sabuk Kuiper memanjang dari orbit Neptunus ke luar sekitar 50 AU dari Matahari. Ini adalah reservoir besar dari benda-benda es — sisa-sisa tata surya awal — termasuk planet kerdil seperti Pluto, Makemake, dan Haumea. Ini adalah sumber komet periode pendek.',
+      'Sabuk Kuiper adalah wilayah luas di luar orbit Neptunus yang dipenuhi objek es sisa pembentukan tata surya awal. Wilayah ini menjadi tempat berbagai planet kerdil, termasuk Pluto, Haumea, dan Makemake.',
     stats: [
       { label: 'Lokasi', value: '30 – 50 AU' },
-      { label: 'Benda penting', value: 'Pluto, Makemake, Haumea, Eris' },
-      { label: 'Objek', value: '100.000+ diketahui' },
-      { label: 'Suhu', value: '~-220°C' },
+      { label: 'Objek penting', value: 'Pluto, Haumea, Makemake, Eris' },
+      { label: 'Perkiraan objek besar', value: '100.000+' },
+      { label: 'Suhu rata-rata', value: '~-220°C' },
     ],
-    members: ['Pluto', 'Makemake', 'Haumea', 'Eris', '+ banyak KBO'],
+    members: ['Pluto', 'Makemake', 'Haumea', 'Eris', '+ banyak objek Kuiper'],
     highlights: [
-      'Reservoir luas bahan primordial beku',
-      'Dijelajahi oleh NASA New Horizons (Pluto 2015)',
-      'Asal dari komet periode pendek',
-      'Mungkin berisi benda besar yang belum ditemukan',
+      'Dipenuhi objek es purba dari masa awal tata surya',
+      'Menjadi sumber utama komet periode pendek',
+      'Pluto dipelajari langsung oleh pesawat ruang angkasa New Horizons pada tahun 2015',
+      'Diduga masih menyimpan objek besar yang belum terdeteksi',
     ],
-    funFact: 'Sabuk Kuiper 20 kali lebih luas dan 20–200 kali lebih masif daripada sabuk asteroid.',
+    funFact:
+      'Sabuk Kuiper jauh lebih luas dan diperkirakan jauh lebih masif dibanding Sabuk Asteroid.',
   },
 ];
 
@@ -122,48 +126,48 @@ function hexToRgba(hex, alpha) {
 // ─── Build region infocard ────────────────────────────────────────────────────
 function buildInfocard(region) {
   return `
-    <div class="region-infocard-inner" style="--region-accent:${region.accentColor}; --region-border:${region.borderColor}; background:${region.gradient}">
+    <div class="region-infocard-inner" style="--region-accent:${region.accentColor}; --region-border:${region.borderColor};">
       <button class="region-infocard-close" id="region-infocard-close" aria-label="Tutup info wilayah">×</button>
 
       <div class="region-infocard-header">
-        <div>
-          <h2 class="region-infocard-title">${region.label}</h2>
-          <p class="region-infocard-subtitle">Wilayah Tata Surya</p>
-        </div>
+        <h2 class="region-infocard-title">${region.label}</h2>
+        <p class="region-infocard-subtitle">Wilayah Tata Surya</p>
       </div>
 
-      <p class="region-infocard-desc">${region.description}</p>
+      <div class="region-infocard-scroll-wrap">
+        <p class="region-infocard-desc">${region.description}</p>
 
-      <div class="region-stat-grid">
-        ${region.stats
-          .map(
-            s => `
-          <div class="region-stat-card">
-            <span class="region-stat-label">${s.label}</span>
-            <span class="region-stat-value">${s.value}</span>
+        <div class="region-stat-grid">
+          ${region.stats
+            .map(
+              s => `
+            <div class="region-stat-card">
+              <span class="region-stat-label">${s.label}</span>
+              <span class="region-stat-value">${s.value}</span>
+            </div>
+          `
+            )
+            .join('')}
+        </div>
+
+        <div class="region-section">
+          <h3 class="region-section-title">Sorotan Utama</h3>
+          <ul class="region-highlights-list">
+            ${region.highlights.map(h => `<li class="region-highlight-item">${h}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div class="region-section">
+          <h3 class="region-section-title">Anggota</h3>
+          <div class="region-members-row">
+            ${region.members.map(m => `<span class="region-member-tag">${m}</span>`).join('')}
           </div>
-        `
-          )
-          .join('')}
-      </div>
-
-      <div class="region-section">
-        <h3 class="region-section-title">Sorotan Utama</h3>
-        <ul class="region-highlights-list">
-          ${region.highlights.map(h => `<li class="region-highlight-item">${h}</li>`).join('')}
-        </ul>
-      </div>
-
-      <div class="region-section">
-        <h3 class="region-section-title">Anggota</h3>
-        <div class="region-members-row">
-          ${region.members.map(m => `<span class="region-member-tag">${m}</span>`).join('')}
         </div>
-      </div>
 
-      <div class="region-funfact">
-        <span class="region-funfact-label">Fakta Menyenangkan</span>
-        <p class="region-funfact-text">${region.funFact}</p>
+        <div class="region-funfact">
+          <span class="region-funfact-label">Fun Fact</span>
+          <p class="region-funfact-text">${region.funFact}</p>
+        </div>
       </div>
     </div>
   `;
@@ -172,6 +176,10 @@ function buildInfocard(region) {
 // ─── Show region infocard ─────────────────────────────────────────────────────
 function showRegionInfocard(region) {
   if (!infocardEl) return;
+
+  // Hide planet infocard if open
+  hideInfocard();
+
   infocardEl.innerHTML = buildInfocard(region);
   infocardEl.classList.add('region-infocard-visible');
 
@@ -179,12 +187,19 @@ function showRegionInfocard(region) {
   if (closeBtn) {
     closeBtn.addEventListener('click', hideRegionInfocard);
   }
+
+  // Notify system (e.g. for hiding other UI elements)
+  window.dispatchEvent(new CustomEvent('infocard-toggled', { detail: { visible: true } }));
 }
 
-function hideRegionInfocard() {
+export function hideRegionInfocard() {
   if (!infocardEl) return;
   infocardEl.classList.remove('region-infocard-visible');
   activeRegionId = null;
+
+  // Notify system
+  window.dispatchEvent(new CustomEvent('infocard-toggled', { detail: { visible: false } }));
+
   // Remove highlight from all items using their stored removeActive fn
   if (dropdownEl) {
     dropdownEl.querySelectorAll('.region-dropdown-item').forEach(item => {

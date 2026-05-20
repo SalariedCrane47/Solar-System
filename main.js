@@ -29,8 +29,6 @@ import { ASTEROID_BELT, KUIPER_BELT } from './src/constants.js';
 import { imageSources } from './src/data/imageSources.js';
 import { textureManager } from './src/textureManager.js';
 
-let saturnRing = null;
-let uranusRing = null;
 
 if (window.__INITIAL_LANG__) {
   setLanguage(window.__INITIAL_LANG__);
@@ -160,21 +158,6 @@ const {
 orbitPlanes.forEach(p => scene.add(p));
 orbits.forEach(o => scene.add(o));
 
-const planetGroups = getPlanetGroups();
-if (planetGroups.saturn) {
-  planetGroups.saturn.traverse(child => {
-    if (child.isMesh && child.geometry?.type === 'RingGeometry') {
-      saturnRing = child;
-    }
-  });
-}
-if (planetGroups.uranus) {
-  planetGroups.uranus.traverse(child => {
-    if (child.isMesh && child.geometry?.type === 'RingGeometry') {
-      uranusRing = child;
-    }
-  });
-}
 
 const { asteroidBelt, animateAsteroids } = createAsteroidBelt({
   innerRadius: orbitalParameters.asteroidBelt.innerRadius,
@@ -267,23 +250,7 @@ window.addEventListener('infocard-toggled', e => {
   updateCameraOffset(e.detail.visible);
 });
 
-window.addEventListener('rings-visibility-change', e => {
-  if (e.detail.saturn !== undefined && saturnRing) {
-    saturnRing.visible = e.detail.saturn;
-  }
-  if (e.detail.uranus !== undefined && uranusRing) {
-    uranusRing.visible = e.detail.uranus;
-  }
-});
 
-window.addEventListener('take-screenshot', () => {
-  renderer.render(scene, camera);
-  const dataURL = renderer.domElement.toDataURL('image/png');
-  const link = document.createElement('a');
-  link.download = `solar-system-${Date.now()}.png`;
-  link.href = dataURL;
-  link.click();
-});
 
 const doAnimate = animate({
   clock,

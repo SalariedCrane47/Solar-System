@@ -36,8 +36,7 @@
   "settings": {
     "title": "Pengaturan",
     "showLabels": "Tampilkan Label Planet",
-    "showTimeControls": "Tampilkan Kontrol Waktu",
-    "showRings": "Tampilkan Cincin Planet"
+    "showTimeControls": "Tampilkan Kontrol Waktu"
   },
   "timeControls": {
     "slower": "Lambat / Mundur",
@@ -67,7 +66,6 @@
     "distance": "Jarak",
     "au": "AU",
     "km": "km",
-    "screenshot": "Ambil Tangkapan Layar",
     "planetCompare": "Bandingkan Planet"
   },
   "startMenu": {

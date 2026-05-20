@@ -2,8 +2,6 @@ import { t, onLanguageChange } from '../src/i18n/index.js';
 import { showDistanceCalculator } from './distanceCalculator.js';
 import { showComparePanel } from './comparePanel.js';
 
-let saturnRingVisible = true;
-let uranusRingVisible = true;
 
 export function init() {
   const settingsBtn = document.createElement('button');
@@ -49,18 +47,6 @@ export function init() {
   timeRow.appendChild(timeCheckbox);
   timeRow.appendChild(timeText);
 
-  const ringsRow = document.createElement('div');
-  ringsRow.className = 'settings-row';
-  const ringsCheckbox = document.createElement('input');
-  ringsCheckbox.type = 'checkbox';
-  ringsCheckbox.id = 'toggle-rings';
-  ringsCheckbox.checked = true;
-  const ringsText = document.createElement('label');
-  ringsText.htmlFor = 'toggle-rings';
-  ringsText.setAttribute('data-i18n', 'settings.showRings');
-  ringsText.textContent = t('settings.showRings');
-  ringsRow.appendChild(ringsCheckbox);
-  ringsRow.appendChild(ringsText);
 
   const distanceRow = document.createElement('div');
   distanceRow.className = 'settings-row';
@@ -74,16 +60,6 @@ export function init() {
   });
   distanceRow.appendChild(distanceBtn);
 
-  const screenshotRow = document.createElement('div');
-  screenshotRow.className = 'settings-row';
-  const screenshotBtn = document.createElement('button');
-  screenshotBtn.className = 'settings-action-btn';
-  screenshotBtn.setAttribute('data-i18n', 'features.screenshot');
-  screenshotBtn.textContent = t('features.screenshot');
-  screenshotBtn.addEventListener('click', () => {
-    window.dispatchEvent(new CustomEvent('take-screenshot'));
-  });
-  screenshotRow.appendChild(screenshotBtn);
 
   const compareRow = document.createElement('div');
   compareRow.className = 'settings-row';
@@ -99,9 +75,7 @@ export function init() {
 
   panel.appendChild(labelRow);
   panel.appendChild(timeRow);
-  panel.appendChild(ringsRow);
   panel.appendChild(distanceRow);
-  panel.appendChild(screenshotRow);
   panel.appendChild(compareRow);
 
   document.body.appendChild(settingsBtn);
@@ -132,24 +106,13 @@ export function init() {
     }
   });
 
-  ringsCheckbox.addEventListener('change', e => {
-    saturnRingVisible = e.target.checked;
-    uranusRingVisible = e.target.checked;
-    window.dispatchEvent(
-      new CustomEvent('rings-visibility-change', {
-        detail: { saturn: saturnRingVisible, uranus: uranusRingVisible },
-      })
-    );
-  });
 
   onLanguageChange(() => {
     settingsBtn.setAttribute('title', t('settings.title'));
     titleRow.textContent = t('settings.title');
     labelText.textContent = t('settings.showLabels');
     timeText.textContent = t('settings.showTimeControls');
-    ringsText.textContent = t('settings.showRings');
     distanceBtn.textContent = t('features.distanceCalculator');
-    screenshotBtn.textContent = t('features.screenshot');
   });
 
   return { btn: settingsBtn, panel };

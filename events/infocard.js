@@ -3,6 +3,7 @@ import { celestialData } from '../src/data/celestialData.js';
 import { INFOCARD } from '../src/constants.js';
 import { t } from '../src/i18n/index.js';
 import { showDistanceCalculator } from './distanceCalculator.js';
+import { hideRegionInfocard } from './regionSelector.js';
 export { celestialData };
 
 let cardEl = null;
@@ -293,6 +294,9 @@ function renderLayers(container, layers) {
  * @param {THREE.Object3D} planetObject - The planet mesh/group from the main scene
  */
 export function show(name, planetObject) {
+  // Hide region infocard if open
+  hideRegionInfocard();
+
   const data = celestialData[name];
   if (!data) return;
 
