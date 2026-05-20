@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { inject } from '@vercel/analytics';
 import {
   createScene,
   createCamera,
@@ -28,6 +29,9 @@ import { orbitalParameters } from './src/data/orbitParam.js';
 import { ASTEROID_BELT, KUIPER_BELT } from './src/constants.js';
 import { imageSources } from './src/data/imageSources.js';
 import { textureManager } from './src/textureManager.js';
+
+// Initialize Vercel Web Analytics
+inject();
 
 
 if (window.__INITIAL_LANG__) {
