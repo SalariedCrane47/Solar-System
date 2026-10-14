@@ -41,10 +41,3 @@ An interactive 3D visualization of our solar system built with Three.js, featuri
 | `Space`  | Pause/Resume time |
 | `←/→`    | Adjust time speed |
 | `Escape` | Close panels      |
-
-## Browser Support
-
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
